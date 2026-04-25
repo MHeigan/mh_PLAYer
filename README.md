@@ -10,7 +10,7 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
 ## Download
 
-**[⬇ Download mh_PLAYer v2.8.21 (Windows x64)](https://github.com/[your_repo]/releases/latest)**
+**[Download mh_PLAYer v2.8.21 (Windows x64)](https://github.com/MHeigan/mh_player/releases/tag/mh_PLAYer_v2_8_21)**
 
 Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing.
 
@@ -82,7 +82,7 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 ## Installation
 
-1. Download the ZIP from the [Releases](https://github.com/[your_repo]/releases) page.
+1. Download the ZIP from the [Releases](https://github.com/MHeigan/mh_player/releases) page.
 2. Extract to any folder — no installer or admin rights required.
 3. Run `mh_PLAYer_Win_x64_v2_8_21.exe`.
 4. Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
