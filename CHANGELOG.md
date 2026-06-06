@@ -35,6 +35,7 @@ Latent issues found while testing the consolidated build — all in code paths n
 - **Bookmark previous / next** crashed: `_go_to_frame_idx` was undefined; navigation now uses the standard `_frame_idx` + `_after_step` jump.
 - **Audio persisted across loads**: opening a new source (e.g. an EXR sequence after an MP4 with audio) left the previous clip's audio track and waveform loaded. A new `_reset_audio_state()` now clears embedded + imported audio, hides the waveform, and discards any in-flight async extraction at every source load.
 - **Plugin Scripting is now correctly enforced as a Studio Pro feature.** The licence gate previously admitted any valid tier — `plugins` was unintentionally covered by the `FEATURES=ALL` shorthand. It now lives in `PRO_FEATURES`, so Individual / Studio licences no longer unlock it; Studio Pro keys must enumerate it (`FEATURES=ALL,remote_review_sync,edl_timeline,plugins`). This matches the manual, website, and invoices, which already list Plugin Scripting as Studio Pro.
+- **Studio Pro / Trial licences are now type-authoritative.** A valid Studio Pro or Trial key unlocks every feature regardless of its `FEATURES` string, so a key issued before `plugins` became a Pro feature still unlocks Plugins (previously such a key showed the "Studio Pro" badge but left the Plugins menu locked). `TYPE` is part of the HMAC-signed canonical fields and cannot be forged; Individual / Studio licences remain governed by explicit `FEATURES` enumeration.
 
 ---
 
