@@ -12,7 +12,7 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
 **[⬇ Download mh_PLAYer v2.12.0 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_0.zip)**
 
-Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases]([https://github.com/MHeigan/mh_player/releases/latest](https://github.com/MHeigan/mh_PLAYer/releases/tag/mh_PLAYer_v2_12_0)).
+Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_PLAYer/releases/tag/mh_PLAYer_v2_12_0)).
 
 ---
 
