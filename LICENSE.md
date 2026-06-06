@@ -1,6 +1,6 @@
 # End User License Agreement
 
-**mh_PLAYer — Version 2.8**  
+**mh_PLAYer — Version 2.12**  
 Copyright © 2026 Martin P. Heigan. All Rights Reserved.  
 [https://anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)
 
@@ -24,13 +24,16 @@ An Individual license authorises use of the Software on a single computer, ident
 **1.2 — Studio License**  
 A Studio license authorises use of the Software on any computer within the licensed organisation. The license is not bound to a specific machine. Studio licenses may not be transferred to a third party or used outside the licensed organisation.
 
-**1.3 — Trial (Demo) License**  
+**1.3 — Studio Pro License**  
+A Studio Pro license authorises use of the Software on any computer within the licensed organisation, on the same terms as a Studio License, and additionally unlocks the Studio Pro features of the Software — the EDL / Multi-Clip Timeline, Synced Remote Review, and Plugin Scripting. The license is not bound to a specific machine. Studio Pro licenses may not be transferred to a third party or used outside the licensed organisation.
+
+**1.4 — Trial (Demo) License**  
 A Trial license permits use of all Software functionality for a period of ten (10) calendar days from the date of first successful license validation ("Trial Period"). Upon expiry, licensed features are disabled until a permanent license is obtained.
 
-**1.4** The license key and associated `license.dat` file are issued to a specific name and email address. They are personal to the Licensee and may not be transferred, shared, or used by any other individual or entity, except as expressly permitted under a Studio License.
+**1.5** The license key and associated `license.dat` file are issued to a specific name and email address. They are personal to the Licensee and may not be transferred, shared, or used by any other individual or entity, except as expressly permitted under a Studio or Studio Pro License.
 
-**1.5 — Unlicensed Use**  
-Certain core functions of the Software — including image sequence and video playback, display and colour management, and pipeline CLI modes — are available without a valid license key ('Unlicensed Use'). Unlicensed Use is permitted under the terms of this Agreement. Features that require a valid license key are clearly indicated within the Software. Unlicensed Use does not grant any right to the licensed features described in Sections 1.1 through 1.4.
+**1.6 — Unlicensed Use**  
+Certain core functions of the Software — including image sequence and video playback, display and colour management, and pipeline CLI modes — are available without a valid license key ('Unlicensed Use'). Unlicensed Use is permitted under the terms of this Agreement. Features that require a valid license key are clearly indicated within the Software. Unlicensed Use does not grant any right to the licensed features described in Sections 1.1 through 1.5.
 
 ---
 
@@ -115,7 +118,7 @@ If any provision of this Agreement is held to be unenforceable, that provision s
 ## 10. Contact
 
 **Martin P. Heigan**  
-[Contact form](https://anti-matter-3d.com/contact/)  
+[Contact form](https://anti-matter-3d.com/contact)  
 [https://anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)
 
 ---
