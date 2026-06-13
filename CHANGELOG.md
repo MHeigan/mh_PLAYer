@@ -3,6 +3,22 @@
 
 ---
 
+## v2.12.1 — 2026
+**Feature  —  Help → Install License…  ·  optional Inno Setup installer**
+
+Adds a one-click licence install path so clients never have to open
+`%APPDATA%\mh_tools\` by hand, and introduces an optional Windows installer
+alongside the existing ZIP / SFX distribution.
+
+- `VERSION` → `2.12.1`.
+- **Help → Install License…** — browse for a licence `.dat` and have it placed at `%APPDATA%\mh_tools\license.dat` automatically (the canonical name the app loads), so users never open or expose that folder, where trial / temp keys also live. New `LicenseManager.validate_file()` probes the chosen file with the loader's full checks — HMAC signature + INDIVIDUAL MAC bind + TRIAL expiry, against this machine — without disturbing the active licence; an invalid file shows the exact reason with an "install anyway?" override, and an existing key is confirmed before replacement. The file is copied byte-for-byte and stored as `license.dat`, so a CMS content timestamp is preserved: a descriptively-named generator file (`license_<domain>_<name>.dat`) can be installed directly and is renamed on copy. After a successful install the user is asked to quit and relaunch.
+- Build set: `mh_PLAYer_v2_12_1.py` + avloose bat + `version_mh_PLAYer_v2_12_1.txt`.
+- **Optional Inno Setup installer** (`build_installer.iss` / `build_installer.bat`) — user-level install (no admin) to `%LOCALAPPDATA%\Programs\mh_tools\mh_PLAYer`, payload flattened to mirror the ZIP, Nuitka runtime clutter hidden (hidden+system) to match the tidy ZIP view, **slate-grey dark wizard theme** (`modern dark` + `WizardBackColor=$6B5C51` = #515C6B with white text; needs Inno 6.6.0+), a Start Menu shortcut, a Desktop shortcut, and an **Add to PATH** task that mirrors Help → CLI PATH Setup… (appends the install dir to `HKCU\Environment\Path`, deduped with the in-app feature, removed on uninstall). The ZIP / SFX remain the primary distribution; the installer is an additional option for less technical users.
+- **Help menu documentation links** — **Quick Start…** and **CLI Cheat Sheet…** (open the bundled `mh_PLAYer_v2_12_Quick_Start.pdf` / `mh_PLAYer_v2_12_CLI_Cheatsheet.pdf`) added after User Manual…, and **Nuke Integration…** (opens the `Nuke_Integration` folder) after License Agreement… — so the docs and Nuke files stay reachable when the app is installed to `%LOCALAPPDATA%` rather than extracted to a visible folder.
+- **Docs** — the User Manual and Quick Start now cover both the portable ZIP and the optional installer, and all licensing instructions use **Help → Install License…**; the manual `%APPDATA%\mh_tools\` licence-placement step is gone (preferences still note that folder).
+
+---
+
 ## v2.12.0 — 2026
 **Release  —  v2.11 cycle promoted to a clean minor version**
 
