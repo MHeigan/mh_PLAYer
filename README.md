@@ -1,4 +1,4 @@
-# mh_PLAYer v2.12.0
+# mh_PLAYer v2.12.1
 
 **High-Performance CGI/VFX Image Sequence & Video Player for Windows**  
 Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
@@ -10,9 +10,9 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
 ## Download
 
-**[⬇ Download mh_PLAYer v2.12.0 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_0.zip)**
+**[⬇ Download mh_PLAYer v2.12.1 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_1.zip)**
 
-Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_PLAYer/releases/tag/mh_PLAYer_v2_12_0)).
+Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_player/releases/latest).
 
 ---
 
@@ -20,9 +20,9 @@ Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for 
 
 mh_PLAYer is a professional image sequence and video player built for CGI and VFX production pipelines. It handles multi-layer OpenEXR sequences, video dailies, HDR files, and everything in between — with full colour management, A/B compare, stereo anaglyph compositing, annotation tools, a pipeline CLI, and a three-level frame cache for sustained playback of large sequences.
 
-Version 2.12 adds a complete **EDL / Multi-Clip Timeline**, frame-accurate **Synced Remote Review** across machines, and **Python plugin scripting** — turning the player into a review and conform hub for the whole team.
+Version 2.12 adds a complete **EDL / Multi-Clip Timeline**, frame-accurate **Synced Remote Review** across machines, and **Python plugin scripting** — turning the player into a review and conform hub for the whole team. **v2.12.1** adds an optional Windows installer and one-click in-app license installation (**Help → Install License…**).
 
-No Python. No dependencies. No installer. Extract the ZIP and run.
+No Python. No dependencies. Portable — extract the ZIP and run, or use the optional Windows installer.
 
 ---
 
@@ -108,18 +108,24 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 ## Installation
 
+**Portable ZIP** — no installer or admin rights:
+
 1. Download the ZIP from [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) or the [Releases](https://github.com/MHeigan/mh_player/releases) page.
-2. Extract to any folder — no installer or admin rights required.
-3. Run `mh_PLAYer_Win_x64_v2_12_0.exe`.
+2. Extract to any folder.
+3. Run `mh_PLAYer_Win_x64_v2_12_1.exe`.
 4. Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
 5. Use **Help → CLI PATH Setup…** to add mh_PLAYer to your user PATH for terminal access.
 
+**Windows installer** — a signed, per-user installer (`mh_PLAYer_Win_x64_v2_12_1_Setup.exe`, no admin/UAC) is also available. Its *Select Additional Tasks* page lets you tick a Start Menu shortcut, a Desktop shortcut, and PATH integration (all ticked by default); it creates the shortcuts and PATH entry for you, and registers an Apps & features uninstall entry.
+
 ```
-mh_PLAYer_Win_x64_v2_12_0.exe       Main application (digitally signed)
+mh_PLAYer_Win_x64_v2_12_1.exe       Main application (digitally signed)
 ffmpeg\                              Bundled FFmpeg
 _internal\                           Application runtime files
 plugins\                             Plugin folder (bundled example_plugin.py)
 mh_PLAYer_v2_12_User_Manual.pdf      Full user manual
+mh_PLAYer_v2_12_Quick_Start.pdf      Quick start guide
+mh_PLAYer_v2_12_CLI_Cheatsheet.pdf   CLI cheat sheet
 Nuke_Integration\                    Nuke flipbook integration:
                                        mh_player_nuke.py, mh_player_nuke_Quickstart.pdf
 License_Agreement.pdf                End User License Agreement
@@ -250,7 +256,7 @@ import mh_player_nuke
 mh_player_nuke.register()
 ```
 ```batch
-set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_0.exe
+set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_1.exe
 ```
 
 See `Nuke_Integration/mh_player_nuke_Quickstart.pdf` for full setup including OCIO passthrough and exe discovery.
@@ -270,12 +276,12 @@ Every release ships with verification artefacts.
 
 **PowerShell:**
 ```powershell
-Get-FileHash mh_PLAYer_Win_x64_v2_12_0.exe -Algorithm SHA256
+Get-FileHash mh_PLAYer_Win_x64_v2_12_1.exe -Algorithm SHA256
 ```
 
 **Command Prompt:**
 ```cmd
-certutil -hashfile mh_PLAYer_Win_x64_v2_12_0.exe SHA256
+certutil -hashfile mh_PLAYer_Win_x64_v2_12_1.exe SHA256
 ```
 
 Compare the output against `SHA256SUMS.txt`. The exe is digitally signed and submitted to Microsoft WDSI and VirusTotal before every public release.
@@ -324,6 +330,8 @@ All paid licenses are **perpetual** — no subscription, no renewal fees. A **Tr
 > Video file audio plays without a license — only imported audio for image sequences requires one.
 
 **10-day full-feature trial available on request — no payment required.**
+
+After purchase you receive a signed `license.dat`. Install it from **Help → Install License…** — browse to the file and mh_PLAYer validates and installs it, then prompts you to relaunch.
 
 Purchase and trial requests: [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)  
 Or contact me at: [anti-matter-3d.com/contact](https://anti-matter-3d.com/contact)
