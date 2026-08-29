@@ -10,7 +10,11 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
 ## Download
 
-**[⬇ Download mh_PLAYer v2.12.2 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_2.zip)**
+**[⬇ mh_PLAYer v2.12.2 — Windows x64 installer](https://anti-matter-3d.com/mh_player/mh_PLAYer_Win_x64_v2_12_2_Setup.exe)**  
+Signed, per-user, no admin rights. Adds Start Menu / Desktop shortcuts, optional PATH integration, and a managed uninstall.
+
+**[⬇ mh_PLAYer v2.12.2 — Windows x64 (portable ZIP)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_2.zip)**  
+Extract anywhere and run. No installation, no admin rights.
 
 Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_player/releases/latest).
 
