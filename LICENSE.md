@@ -35,6 +35,9 @@ A Trial license permits use of all Software functionality for a period of ten (1
 **1.6 — Unlicensed Use**  
 Certain core functions of the Software — including image sequence and video playback, display and colour management, and pipeline CLI modes — are available without a valid license key ('Unlicensed Use'). Unlicensed Use is permitted under the terms of this Agreement. Features that require a valid license key are clearly indicated within the Software. Unlicensed Use does not grant any right to the licensed features described in Sections 1.1 through 1.5.
 
+**1.7 — Plugin Authoring**  
+Notwithstanding Sections 2.2 and 2.6, Licensee may write, use, and distribute their own plugin scripts that interface with the Software through the published `mh_player_api` module, and may copy and modify the bundled example and plugin scripts for that purpose. Such plugins remain the property of their author. This permission extends only to plugin scripts using the published API; it does not permit modification, reverse engineering, or redistribution of the Software itself, and running plugins requires a license with the Plugin Scripting feature enabled.
+
 ---
 
 ## 2. Restrictions
