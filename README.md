@@ -1,4 +1,4 @@
-# mh_PLAYer v2.12.1
+# mh_PLAYer v2.12.2
 
 **High-Performance CGI/VFX Image Sequence & Video Player for Windows**  
 Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
@@ -10,7 +10,7 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
 ## Download
 
-**[⬇ Download mh_PLAYer v2.12.1 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_1.zip)**
+**[⬇ Download mh_PLAYer v2.12.2 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_2.zip)**
 
 Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_player/releases/latest).
 
@@ -38,13 +38,14 @@ No Python. No dependencies. Portable — extract the ZIP and run, or use the opt
 - **Onion-skinning** — overlay adjacent frames for animation timing
 
 **Colour Management**
-- sRGB, ACES Filmic, Power Gamma, Linear display modes
-- **CDL grade** — slope / offset / power, applied through a fast precomputed LUT
-- LUT support — `.cube` and `.3dl`
+- sRGB, ACES Filmic, Power Gamma, Linear and False Colour display modes
+- **CDL grade** — slope / offset / power / saturation through a fast precomputed LUT, with ASC-CDL `.cc` import/export
+- **Two LUT slots** — a **Display LUT** that replaces the display transform, and a **Source LUT** applied in scene-linear before it, so sRGB / ACES / OCIO stay selectable underneath
+- LUT formats — `.cube` (1D, 3D, or a 1D shaper plus a 3D cube in one file) and `.3dl`
 - **OpenColorIO bundled** — no separate install; auto-loads `$OCIO`
 - Auto colour space detection from EXR header on load
 - EV (±8 stops) and gamma — spinbox controls, live labels
-- **Aspect ratio correction** — 13 presets from 1:1 to 4K Scope; transport bar combo + sidebar; saved per workspace
+- **Aspect ratio correction** — 13 presets from 1:1 to 4K Scope; transport bar combo + sidebar. Per-source: resets to Pixel on open, saved with the workspace
 
 **Stereo / Anaglyph** *(free)*
 - **Two-sequence mode** — load left and right eye sequences independently; any supported format
@@ -56,6 +57,7 @@ No Python. No dependencies. Portable — extract the ZIP and run, or use the opt
 **Review & QC**
 - A/B Wipe compare — draggable divider or independent B sequence *(license)*
 - Diff mode — `|A−B| × amplify` (1–32×) full-frame difference *(license)*
+- **Multi-View Compare** — dailies-style side-by-side window; up to 9 stills or grabbed frames in an auto grid (1×1 → 3×3), per-pane zoom/pan with **Sync Zoom & Pan**, Fit All / 1:1 All *(free)*
 - **Playlist** — multi-clip queue with per-clip In/Out trim, drag-reorder, and **M3U / M3U8 import/export**; SSD pre-caching between clips *(license)*
 - Annotation tools — pen, line, arrow, rectangle, text + voice notes *(license)*
 - HUD overlay — frame number, SMPTE TC (drop-frame-correct at 29.97/59.94), shot name (file / folder / custom)
@@ -81,13 +83,15 @@ No Python. No dependencies. Portable — extract the ZIP and run, or use the opt
 **Plugins** *(Studio Pro)*
 - Load small **Python plugins** that add menu commands and react to playback/export events
 - Stable, versioned `mh_player_api` — state queries, playback control, status/log, and event hooks
-- Drop a `.py` file in the `plugins/` folder; a bundled `example_plugin.py` shows the structure
+- **Six plugins bundled** — Studio Watermark, Field Recorder, Contact Sheet, Colour Palette, Colour Theme, Test Patterns
+- Drop your own `.py` file in the `plugins/` folder; `example_plugin.py` shows the structure
 - Full API reference in Appendix B of the user manual
 
 **Interface**
 - **Quick-access icon toolbar** — collapsible rows of icon buttons for display, HUD, guides, A/B compare, scopes, remote review, plus a second row for Playlist, EDL, Onion-skin, Export, and Sync
 - **Sidebar anchors** — toolbar icons scroll the sidebar directly to the relevant section; auto-expands if collapsed
-- Collapsible sidebar — Tab or click the ‹ strip for a clean full-canvas view
+- Collapsible sidebar — Ctrl+Tab or click the ‹ strip for a clean full-canvas view
+- **Check for Latest Version** — Help → Check for Latest Version… compares against the latest GitHub release and links to the download page; manual check only, nothing runs at startup
 
 **Pipeline**
 - CLI — viewer / convert (headless) / check (QC) modes
@@ -112,17 +116,17 @@ No Python. No dependencies. Portable — extract the ZIP and run, or use the opt
 
 1. Download the ZIP from [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) or the [Releases](https://github.com/MHeigan/mh_player/releases) page.
 2. Extract to any folder.
-3. Run `mh_PLAYer_Win_x64_v2_12_1.exe`.
+3. Run `mh_PLAYer_Win_x64_v2_12_2.exe`.
 4. Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
 5. Use **Help → CLI PATH Setup…** to add mh_PLAYer to your user PATH for terminal access.
 
-**Windows installer** — a signed, per-user installer (`mh_PLAYer_Win_x64_v2_12_1_Setup.exe`, no admin/UAC) is also available. Its *Select Additional Tasks* page lets you tick a Start Menu shortcut, a Desktop shortcut, and PATH integration (all ticked by default); it creates the shortcuts and PATH entry for you, and registers an Apps & features uninstall entry.
+**Windows installer** — a signed, per-user installer (`mh_PLAYer_Win_x64_v2_12_2_Setup.exe`, no admin/UAC) is also available. Its *Select Additional Tasks* page lets you tick a Start Menu shortcut, a Desktop shortcut, and PATH integration (all ticked by default); it creates the shortcuts and PATH entry for you, and registers an Apps & features uninstall entry.
 
 ```
-mh_PLAYer_Win_x64_v2_12_1.exe       Main application (digitally signed)
+mh_PLAYer_Win_x64_v2_12_2.exe       Main application (digitally signed)
 ffmpeg\                              Bundled FFmpeg
 _internal\                           Application runtime files
-plugins\                             Plugin folder (bundled example_plugin.py)
+plugins\                             Six bundled Studio Pro plugins + example_plugin.py
 mh_PLAYer_v2_12_User_Manual.pdf      Full user manual
 mh_PLAYer_v2_12_Quick_Start.pdf      Quick start guide
 mh_PLAYer_v2_12_CLI_Cheatsheet.pdf   CLI cheat sheet
@@ -138,7 +142,7 @@ README.txt                           Plain-text quick reference
 
 1. Drop an EXR frame, image file, or video onto the window — or use **File → Open Sequence**.
 2. Press **Space** to play. Use **J / K / L** for shuttle control.
-3. Press **Tab** to collapse the sidebar for a clean full-canvas view.
+3. Press **Ctrl+Tab** to collapse the sidebar for a clean full-canvas view.
 
 ---
 
@@ -183,7 +187,9 @@ The browser page updates automatically during playback at ~15–20 fps on a wire
 
 ## Plugins *(Studio Pro)*
 
-Drop a Python file in the `plugins/` folder next to the exe. Plugins load on startup and can add menu commands and react to events:
+Six plugins ship in the `plugins/` folder — **Studio Watermark**, **Field Recorder**, **Contact Sheet**, **Colour Palette**, **Colour Theme** and **Test Patterns** — and appear in the Plugins menu. They require a Studio Pro license to run.
+
+The folder is user-writable, so you can drop in your own Python file, or replace a bundled plugin with a newer copy from <https://anti-matter-3d.com/mhplayer/>, without touching the signed executable. Plugins load on startup and can add menu commands and react to events:
 
 ```python
 import mh_player_api as mh
@@ -256,7 +262,7 @@ import mh_player_nuke
 mh_player_nuke.register()
 ```
 ```batch
-set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_1.exe
+set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_2.exe
 ```
 
 See `Nuke_Integration/mh_player_nuke_Quickstart.pdf` for full setup including OCIO passthrough and exe discovery.
@@ -276,12 +282,12 @@ Every release ships with verification artefacts.
 
 **PowerShell:**
 ```powershell
-Get-FileHash mh_PLAYer_Win_x64_v2_12_1.exe -Algorithm SHA256
+Get-FileHash mh_PLAYer_Win_x64_v2_12_2.exe -Algorithm SHA256
 ```
 
 **Command Prompt:**
 ```cmd
-certutil -hashfile mh_PLAYer_Win_x64_v2_12_1.exe SHA256
+certutil -hashfile mh_PLAYer_Win_x64_v2_12_2.exe SHA256
 ```
 
 Compare the output against `SHA256SUMS.txt`. The exe is digitally signed and submitted to Microsoft WDSI and VirusTotal before every public release.
@@ -313,6 +319,7 @@ Paid licenses add the production workflow features. **Individual** and **Studio*
 |---|:--:|:--:|:--:|:--:|
 | Core viewer · colour management · aspect ratio · stereo anaglyph | ✓ | ✓ | ✓ | ✓ |
 | Browser remote review · QC toolkit (scopes, inspector, histogram) · CLI | ✓ | ✓ | ✓ | ✓ |
+| Multi-View Compare (side-by-side stills) | ✓ | ✓ | ✓ | ✓ |
 | Annotations · A/B Compare · Playlist · Audio · Export · Slate & Burn-in | — | ✓ | ✓ | ✓ |
 | EDL / Multi-Clip Timeline · Synced Remote Review · Plugin Scripting | — | — | — | ✓ |
 | Licensed use across machines | — | Single (MAC-bound) | Organisation-wide | Organisation-wide |
@@ -353,7 +360,7 @@ Or contact me at: [anti-matter-3d.com/contact](https://anti-matter-3d.com/contac
 | V | Invert display |
 | P | Cycle proxy (Full → ½ → ¼) |
 | F / 1 | Fit to window / 1:1 pixel |
-| Tab | Toggle sidebar |
+| Ctrl+Tab | Toggle sidebar |
 | N | Annotation mode *(license)* |
 | [ | A/B compare *(license)* |
 | Ctrl+G | Go to frame |
