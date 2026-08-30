@@ -345,7 +345,6 @@ All paid licenses are **perpetual** — no subscription, no renewal fees. A **Tr
 After purchase you receive a signed `license.dat`. Install it from **Help → Install License…** — browse to the file and mh_PLAYer validates and installs it, then prompts you to relaunch.
 
 Purchase and trial requests: [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)  
-Or contact me at: [anti-matter-3d.com/contact](https://anti-matter-3d.com/contact)
 
 > This software is proprietary. Use is governed by the End User License Agreement included in the distribution (`License_Agreement.pdf`). By downloading or using mh_PLAYer you agree to its terms.
 
@@ -377,6 +376,6 @@ Or contact me at: [anti-matter-3d.com/contact](https://anti-matter-3d.com/contac
 ---
 
 Digitally signed · Signed release catalogue (`.cat`) + signed SFX · WDSI + VirusTotal submitted before every release  
-[anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) · [anti-matter-3d.com/contact](https://anti-matter-3d.com/contact)
+[anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)
 
 *Copyright © 2026 Martin P. Heigan. All Rights Reserved.*
