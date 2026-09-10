@@ -3,6 +3,121 @@
 
 ---
 
+## v2.12.3 — 2026
+**Fixed  —  video scrub performance · the video cache-key family · wheel/scroll guards**
+
+Two defects reported from ordinary use — sluggish scrubbing on a small local
+MP4, and the wheel changing values while scrolling a panel — turned out to have
+systemic causes, and the investigation found four more live bugs in the same
+family as the first. All measurements below were reproduced in a container with
+the real dependency stack (cv2 4.13, PySide6 6.11) against generated 1080p
+H.264 clips.
+
+- `VERSION` → `2.12.3`.
+
+### Fixed — video scrubbing (the architecture, not a tuning pass)
+- **Scrubbing a video decoded at roughly 1.4 fps.** A random seek in a long-GOP
+  codec is not a seek: it is a keyframe seek plus a forward decode of every
+  frame in between. Measured on 1080p H.264 at the x264 default GOP of 250,
+  a sequential decode costs ~9 ms/frame and a seek-and-decode costs ~700 ms —
+  a 78x penalty, and PyAV measures the same ~670 ms, so this is the codec, not
+  OpenCV. Short-GOP exports are better but still only reach ~153 ms/frame.
+  The v2.11.8 note that estimated "50–200 ms" underestimated the real cost by
+  3–14x, which is why the debounce it introduced never fixed the symptom.
+- **The preloader was making it dramatically worse.** `SequentialPreloader`
+  queues frames centre-out (`c, c+1, c-1, c+2, c-2…`), which is correct for
+  EXR — one file per frame, decoded in parallel — and is the worst possible
+  order for an inter-frame codec: it breaks the decoder's sequential fast path
+  on ~75% of reads. The same 33 frames cost **29.2 s centre-out and 1.2 s
+  ascending**, a 25x penalty, burned on a background thread while the GUI
+  thread was already blocked on its own 700 ms decode.
+- **New `VideoPrefetcher`.** Video is now filled by a single dedicated thread
+  that decodes **ascending** into L2 with its own decoder, budget-capped at 25%
+  of the L2 display cache (`VIDEO_CACHE_BUDGET_FRAC`) — a short clip is cached
+  whole, a long one keeps a rolling span anchored at the playhead. Frames
+  already resident are stepped over with a new `VideoFileDecoder.skip_frame()`
+  (grab, no convert) so the sequential path survives. Verified live: a 300-frame
+  1080p clip fills completely, and 300 random scrub positions are then 300/300
+  cache hits at ~4 µs each.
+- **Scrubbing now displays on every mouse-move over the cached span** instead of
+  waiting for the 30 ms debounce to settle. The debounce is retained as the cold
+  path only. Sync Review broadcasts deliberately stay on the settle boundary:
+  `SyncReviewServer._broadcast` does a blocking socket send on the calling
+  thread, so firing it per mouse-move would stall a host on a slow link.
+- **`schedule()` / `schedule_all()` are now hard no-ops for video**, so no
+  future call site can reintroduce the seek storm.
+- **Playback ticks read L2 first.** The video branch of `_play_tick` went
+  straight to L3 or a fresh decode, so a fully cached clip still paid a decode
+  per frame.
+
+### Fixed — the video cache-key family
+A video's virtual sequence is one path repeated per frame, while its cache
+entries are keyed `path|idx`. Five call sites still keyed off `sequence[idx]`:
+
+- **Preloaded video frames never repainted.** `_on_frame_ready` compared the
+  emitted `path|idx` key against `sequence[idx]` — never equal, so every
+  prefetched video frame was silently discarded by the guard. Replaced for
+  video by `_on_video_frame_ready(idx)`.
+- **Fullscreen showed the HUD over black for any video source.**
+  `FullscreenPlayer` reads only from L2 and missed on every frame. It now takes
+  an index→key mapper; the default preserves image-sequence behaviour exactly.
+- **A contact sheet built from a video repeated the current frame in every
+  cell.** The L2 miss fell through to PIL (which cannot open an MP4) and then to
+  the canvas frame. Now resolved per frame index, decoding on a miss.
+- **A/B compare always reported "current frame not cached yet" on a video.**
+- **Preloaded video frames skipped `raster_to_display`** while being stored
+  under a key that includes ev/gamma/dmode, so with EV, gamma or an
+  ACES/false-colour view active the picture changed appearance depending on
+  whether the frame came from cache. A no-op at defaults, which is why it
+  survived. Corrected even though that path is now unreachable.
+
+### Fixed — wheel / scroll guards
+- **50 controls across 10 windows accepted the wheel unfocused.** v2.12.2 had
+  `ScrollGuardCombo` and nothing else — no spin-box or slider guard existed
+  anywhere in the file. Worst affected were the two windows with a QScrollArea
+  and the most controls: the sidebar (21, including all 10 CDL spins) and the
+  Video Export dialog (7, including the only two unguarded combos left in the
+  file, so scrolling that dialog could silently change the ProRes profile).
+  The transport bar's FPS and retime spins were also live, with no visible undo.
+- **New `ScrollGuardSpin`, `ScrollGuardDoubleSpin`, `ScrollGuardSlider`**, and
+  `ScrollGuardCombo` brought in line with the suite standard. **Behaviour
+  change:** the guard is now an *unconditional* ignore plus StrongFocus, not
+  the old `hasFocus()` gate — a focused control could still eat the wheel while
+  the user scrolled the panel around it. Adjust with the arrow keys or by
+  typing. Verified live in a real QScrollArea: all four hold their value with
+  and without focus, where a plain QSpinBox steps.
+
+### Changed — bytecode cache moved out of the program folder
+- **`__pycache__` is no longer written into the install directory.** Two things
+  in a frozen build are still plain `.py` imported at runtime: the **loose PyAV
+  bundle** beside the exe (60 `.py` files — `--include-package=av` can crash
+  Nuitka's optimizer, so `av` ships uncompiled) and the **plugins folder**.
+  Both wrote `__pycache__` into the installed program folder on first run,
+  where those files are covered by neither `SHA256SUMS.txt` nor
+  `release_manifest.cat` — so an install stopped matching its own manifest
+  after first launch, and uninstall left folders behind.
+- `sys.pycache_prefix` now redirects every `.pyc` to a per-user tree keyed by
+  application version, set before the first loose import. Old version caches
+  are pruned on startup, so disk use is bounded without discarding the cache's
+  only benefit.
+- **Not cleared on exit, deliberately.** A bytecode cache pays for itself only
+  when it is read on the *next* launch; writing it every run and deleting it at
+  shutdown costs the write and collects none of the benefit, which is strictly
+  worse than never writing it. Version-keyed pruning bounds it instead.
+- If the per-user tree cannot be created (locked-down profile, read-only or
+  full disk), bytecode writing is suppressed entirely. The one outcome never
+  permitted is writing into the program directory.
+- `APP_VERSION` is now a module-level constant and `PlayerApp.VERSION` reads
+  it, removing a second version literal that had to be kept in step by hand.
+
+### Fixed — housekeeping
+- **RULE D:** the Register fallback dialog (shown when no mail client is
+  registered) printed the business email as plain text. The `mailto:` remains
+  the sole permitted use; the fallback now points at the contact form. Same
+  violation class as v2.12.2's finding 15 in the CLI licence gate.
+
+---
+
 ## v2.12.2 — 2026
 **Fixed  —  LUT engine correctness · export-family repair · shortcut de-duplication · frozen-build hardening**
 
