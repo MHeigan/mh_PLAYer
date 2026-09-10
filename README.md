@@ -1,199 +1,258 @@
-# mh_PLAYer v2.12.2
+# mh_PLAYer v2.12.3
 
-**High-Performance CGI/VFX Image Sequence & Video Player for Windows**  
+**High-Performance CGI/VFX Image Sequence & Video Player for Windows**
+
 Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 
-> **Proprietary software — free to download and use. Some production features require a license.**  
-> See [Licensing](#licensing) below. Full terms in `License_Agreement.pdf` (included in the ZIP).
+> **Proprietary software — free to download and use. Some production features
+> require a license.**
+> 
+> See [Licensing](#licensing) below. Full terms in `License_Agreement.pdf`
+> (included in the ZIP).
 
----
-
+- - -
 ## Download
 
-**[⬇ mh_PLAYer v2.12.2 — Windows x64 installer](https://anti-matter-3d.com/mh_player/mh_PLAYer_Win_x64_v2_12_2_Setup.exe)**  
-Signed, per-user, no admin rights. Adds Start Menu / Desktop shortcuts, optional PATH integration, and a managed uninstall.
 
-**[⬇ mh_PLAYer v2.12.2 — Windows x64 (portable ZIP)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_2.zip)**  
-Extract anywhere and run. No installation, no admin rights.
+[⬇ Download mh_PLAYer v2.12.3 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_3.zip)
 
-Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for release notes and licensing. GitHub mirror: [Releases](https://github.com/MHeigan/mh_player/releases/latest).
+Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for
+release notes and licensing. GitHub mirror: 
+[Releases](https://github.com/MHeigan/mh_player/releases/latest).
 
----
-
+- - -
 ## What is mh_PLAYer?
 
-mh_PLAYer is a professional image sequence and video player built for CGI and VFX production pipelines. It handles multi-layer OpenEXR sequences, video dailies, HDR files, and everything in between — with full colour management, A/B compare, stereo anaglyph compositing, annotation tools, a pipeline CLI, and a three-level frame cache for sustained playback of large sequences.
+mh_PLAYer is a professional image sequence and video player built for CGI and
+VFX production pipelines. It handles multi-layer OpenEXR sequences, video
+dailies, HDR files, and everything in between — with full colour management,
+A/B compare, stereo anaglyph compositing, annotation tools, a pipeline CLI, and
+a three-level frame cache for sustained playback of large sequences.
 
-Version 2.12 adds a complete **EDL / Multi-Clip Timeline**, frame-accurate **Synced Remote Review** across machines, and **Python plugin scripting** — turning the player into a review and conform hub for the whole team. **v2.12.1** adds an optional Windows installer and one-click in-app license installation (**Help → Install License…**).
+Version 2.12 adds a complete **EDL / Multi-Clip Timeline**, frame-accurate **
+Synced Remote Review** across machines, and **Python plugin scripting** — turning
+the player into a review and conform hub for the whole team.
 
-No Python. No dependencies. Portable — extract the ZIP and run, or use the optional Windows installer.
+**v2.12.3** rebuilds video caching around a linear read-ahead, making video
+scrubbing instant over the cached span instead of decode-bound. See 
+[CHANGELOG.md](CHANGELOG.md).
 
----
+No Python. No dependencies. No installer. Extract the ZIP and run.
 
+- - -
 ## Features
 
 **Playback & Formats**
+
 - **OpenEXR multi-layer** — full AOV tree, all channel depths, float16/float32
 - **HDR / Radiance RGBE** — `.hdr` support with Reinhard tone-map
 - **Video** — MP4, MOV, MKV, AVI, WebM, WMV via bundled FFmpeg
+- **Linear video read-ahead** — clips are decoded in order into RAM ahead of the
+  playhead, so scrubbing over the cached span is instant and playback needs no
+  further decoding; the span re-anchors wherever you scrub to
 - **R/G/B/A channel isolation** — on all source types including video
 - **Frame stride** — play every 2nd–5th frame at real-time speed
 - **Three-level cache** — L1/L2 RAM + L3 SSD for large-sequence playback
 - **Onion-skinning** — overlay adjacent frames for animation timing
 
 **Colour Management**
-- sRGB, ACES Filmic, Power Gamma, Linear and False Colour display modes
-- **CDL grade** — slope / offset / power / saturation through a fast precomputed LUT, with ASC-CDL `.cc` import/export
-- **Two LUT slots** — a **Display LUT** that replaces the display transform, and a **Source LUT** applied in scene-linear before it, so sRGB / ACES / OCIO stay selectable underneath
-- LUT formats — `.cube` (1D, 3D, or a 1D shaper plus a 3D cube in one file) and `.3dl`
+
+- sRGB, ACES Filmic, Power Gamma, Linear display modes
+- **False Colour** — exposure heat map keyed to 18% grey (GUI and CLI)
+- **CDL grade** — slope / offset / power, applied through a fast precomputed LUT
+- LUT support — `.cube` and `.3dl`
 - **OpenColorIO bundled** — no separate install; auto-loads `$OCIO`
 - Auto colour space detection from EXR header on load
 - EV (±8 stops) and gamma — spinbox controls, live labels
-- **Aspect ratio correction** — 13 presets from 1:1 to 4K Scope; transport bar combo + sidebar. Per-source: resets to Pixel on open, saved with the workspace
+- **Aspect ratio correction** — 13 presets from 1:1 to 4K Scope; transport bar
+  combo + sidebar; saved per workspace
 
 **Stereo / Anaglyph** *(free)*
-- **Two-sequence mode** — load left and right eye sequences independently; any supported format
-- **Single stereo EXR mode** — auto-detects left/right layer pairs in multi-camera EXRs (`left.R/G/B + right.R/G/B` and 10 other naming conventions)
-- **Colour modes** — Red-Cyan Half-Color · Red-Cyan Greyscale · Amber-Blue · Green-Magenta
+
+- **Two-sequence mode** — load left and right eye sequences independently; any
+  supported format
+- **Single stereo EXR mode** — auto-detects left/right layer pairs in
+  multi-camera EXRs (`left.R/G/B + right.R/G/B` and 10 other naming conventions)
+- **Colour modes** — Red-Cyan Half-Color · Red-Cyan Greyscale · Amber-Blue ·
+  Green-Magenta
 - Eye swap and gamma-correct options
-- **CLI anaglyph convert** — headless `--anaglyph` flag for batch pipeline use
+- **CLI anaglyph convert** — headless `\--anaglyph` flag for batch pipeline use
 
 **Review & QC**
+
 - A/B Wipe compare — draggable divider or independent B sequence *(license)*
 - Diff mode — `|A−B| × amplify` (1–32×) full-frame difference *(license)*
-- **Multi-View Compare** — dailies-style side-by-side window; up to 9 stills or grabbed frames in an auto grid (1×1 → 3×3), per-pane zoom/pan with **Sync Zoom & Pan**, Fit All / 1:1 All *(free)*
-- **Playlist** — multi-clip queue with per-clip In/Out trim, drag-reorder, and **M3U / M3U8 import/export**; SSD pre-caching between clips *(license)*
+- **Playlist** — multi-clip queue with per-clip In/Out trim, drag-reorder, and **
+  M3U / M3U8 import/export**; SSD pre-caching between clips *(license)*
 - Annotation tools — pen, line, arrow, rectangle, text + voice notes *(license)*
-- HUD overlay — frame number, SMPTE TC (drop-frame-correct at 29.97/59.94), shot name (file / folder / custom)
-- **Remote Review (browser streaming)** — built-in HTTP server; open `http://LAN-IP:8765` on any tablet, phone, or second PC; ~15–20 fps on a wired LAN; no software install on the remote device *(free)*
+- HUD overlay — frame number, SMPTE TC (drop-frame-correct at 29.97/59.94),
+  shot name (file / folder / custom)
+- **Remote Review (browser streaming)** — built-in HTTP server; open `
+  http://LAN-IP:8765` on any tablet, phone, or second PC; ~15–20 fps on a wired
+  LAN; no software install on the remote device *(free)*
 - Waveform / Parade scope — vertical RGB stack with solo buttons
 - Pixel inspector — linear float readout, hex sRGB, clipboard copy
 - Histogram — live RGB overlay
+- **Multi-View Compare** — dailies-style grid of up to 9 stills with per-pane
+  zoom/pan and optional synced inspection; **Grab Current Frame** captures the
+  canvas exactly as displayed *(free)*
 
 **EDL / Multi-Clip Timeline** *(Studio Pro)*
-- Assemble multiple sequences and clips into a single ordered cut for back-to-back review
-- Per-clip trims, **drag-to-reorder**, **edge trim handles**, and a **non-modal editor with a live playhead**
-- **Loop playback**, seamless next-clip pre-loading, and grade persistence across cuts
-- **CMX 3600 EDL import/export** for round-trips with Premiere, Avid, Resolve, and Final Cut — drop-frame-aware at NTSC rates
+
+- Assemble multiple sequences and clips into a single ordered cut for
+  back-to-back review
+- Per-clip trims, **drag-to-reorder**, **edge trim handles**, and a **non-modal
+  editor with a live playhead**
+- **Loop playback**, seamless next-clip pre-loading, and grade persistence across
+  cuts
+- **CMX 3600 EDL import/export** for round-trips with Premiere, Avid, Resolve,
+  and Final Cut — drop-frame-aware at NTSC rates
 - Build a timeline straight from the Playlist (**Send Playlist to Timeline**)
 - **Headless render** — `mh_player --convert cut.mhedl review.mp4`
 
 **Synced Remote Review** *(Studio Pro)*
-- Frame-accurate playback **synchronisation across multiple mh_PLAYer instances** on a LAN
-- **Automatic session discovery** — followers see hosted sessions and join with one click
-- Host-authoritative timing with bi-directional transport control, auth token, and reconnect-on-drop
-- Distinct from the free browser Remote Review above — this syncs full-quality playback between running players
+
+- Frame-accurate playback **synchronisation across multiple mh_PLAYer instances**
+  on a LAN
+- **Automatic session discovery** — followers see hosted sessions and join with
+  one click
+- Host-authoritative timing with bi-directional transport control, auth token,
+  and reconnect-on-drop
+- Distinct from the free browser Remote Review above — this syncs full-quality
+  playback between running players
 
 **Plugins** *(Studio Pro)*
-- Load small **Python plugins** that add menu commands and react to playback/export events
-- Stable, versioned `mh_player_api` — state queries, playback control, status/log, and event hooks
-- **Six plugins bundled** — Studio Watermark, Field Recorder, Contact Sheet, Colour Palette, Colour Theme, Test Patterns
-- Drop your own `.py` file in the `plugins/` folder; `example_plugin.py` shows the structure
+
+- Load small **Python plugins** that add menu commands and react to
+  playback/export events
+- Stable, versioned `mh_player_api` — state queries, playback control,
+  status/log, and event hooks
+- **Six plugins ship in the box** — Studio Watermark, Field Recorder, Contact
+  Sheet, Colour Palette, Colour Theme, and Test Patterns — in the `plugins/`
+  folder next to the exe, nothing to install
+- Drop your own `.py` file in the same folder; the bundled `example_plugin.py`
+  shows the structure
 - Full API reference in Appendix B of the user manual
 
 **Interface**
-- **Quick-access icon toolbar** — collapsible rows of icon buttons for display, HUD, guides, A/B compare, scopes, remote review, plus a second row for Playlist, EDL, Onion-skin, Export, and Sync
-- **Sidebar anchors** — toolbar icons scroll the sidebar directly to the relevant section; auto-expands if collapsed
-- Collapsible sidebar — Ctrl+Tab or click the ‹ strip for a clean full-canvas view
-- **Check for Latest Version** — Help → Check for Latest Version… compares against the latest GitHub release and links to the download page; manual check only, nothing runs at startup
+
+- **Quick-access icon toolbar** — collapsible rows of icon buttons for display,
+  HUD, guides, A/B compare, scopes, remote review, plus a second row for
+  Playlist, EDL, Onion-skin, Export, and Sync
+- **Sidebar anchors** — toolbar icons scroll the sidebar directly to the relevant
+  section; auto-expands if collapsed
+- Collapsible sidebar — Tab or click the ‹ strip for a clean full-canvas view
+- **Wheel-safe controls** — the mouse wheel scrolls panels and zooms the canvas;
+  it never changes a combo, spin box or slider value, so scrolling a dialog
+  cannot alter a setting by accident
 
 **Pipeline**
+
 - CLI — viewer / convert (headless) / check (QC) modes
-- **Timeline & playlist inputs** — open `.mhedl` and `.m3u8` from the command line; render a timeline headlessly
-- **CLI PATH Setup** — Help → CLI PATH Setup… adds the app to user PATH, no admin rights required
-- Nuke flipbook integration — `mh_player_nuke.py` + `mh_player_nuke_Quickstart.pdf` included
+- **Timeline & playlist inputs** — open `.mhedl` and `.m3u8` from the command
+  line; render a timeline headlessly
+- **CLI PATH Setup** — Help → CLI PATH Setup… adds the app to user PATH, no admin
+  rights required
+- Nuke flipbook integration — `mh_player_nuke.py` \+ `
+  mh_player_nuke_Quickstart.pdf` included
 - Workspace save/load — complete session state in a `.mhplay` file
 - Sequence gap detection — warns on open with exact missing frame ranges
 - SMPTE timecode — configurable start, click frame counter to toggle
+- **Check for Latest Version** — Help → Check for Latest Version… compares
+  against the newest GitHub release; a manual check only, nothing contacts the
+  network at startup
 
 **Export** *(license required)*
+
 - Frame export — PNG, TIFF, EXR; current / range / full sequence
 - Video export — H.264, H.265, ProRes via bundled FFmpeg
 - Slate & burn-in — shot, scene, take, artist, company, logo, watermark
 - Quick Save — current frame to PNG/TIFF/JPEG, one keystroke
 
----
-
+- - -
 ## Installation
 
-**Portable ZIP** — no installer or admin rights:
-
-1. Download the ZIP from [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) or the [Releases](https://github.com/MHeigan/mh_player/releases) page.
-2. Extract to any folder.
-3. Run `mh_PLAYer_Win_x64_v2_12_2.exe`.
-4. Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
-5. Use **Help → CLI PATH Setup…** to add mh_PLAYer to your user PATH for terminal access.
-
-**Windows installer** — a signed, per-user installer (`mh_PLAYer_Win_x64_v2_12_2_Setup.exe`, no admin/UAC) is also available. Its *Select Additional Tasks* page lets you tick a Start Menu shortcut, a Desktop shortcut, and PATH integration (all ticked by default); it creates the shortcuts and PATH entry for you, and registers an Apps & features uninstall entry.
+1.  Download the ZIP from 
+    [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) or the 
+    [Releases](https://github.com/MHeigan/mh_player/releases) page.
+2.  Extract to any folder — no installer or admin rights required.
+3.  Run `mh_PLAYer_Win_x64_v2_12_3.exe`.
+4.  Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
+5.  Use **Help → CLI PATH Setup…** to add mh_PLAYer to your user PATH for
+    terminal access.
 
 ```
-mh_PLAYer_Win_x64_v2_12_2.exe       Main application (digitally signed)
+mh_PLAYer_Win_x64_v2_12_3.exe       Main application (digitally signed)
 ffmpeg\                              Bundled FFmpeg
 _internal\                           Application runtime files
-plugins\                             Six bundled Studio Pro plugins + example_plugin.py
+plugins\                             Six bundled plugins + example_plugin.py
 mh_PLAYer_v2_12_User_Manual.pdf      Full user manual
-mh_PLAYer_v2_12_Quick_Start.pdf      Quick start guide
-mh_PLAYer_v2_12_CLI_Cheatsheet.pdf   CLI cheat sheet
 Nuke_Integration\                    Nuke flipbook integration:
                                        mh_player_nuke.py, mh_player_nuke_Quickstart.pdf
 License_Agreement.pdf                End User License Agreement
 README.txt                           Plain-text quick reference
 ```
-
----
-
+- - -
 ## Quick Start
 
-1. Drop an EXR frame, image file, or video onto the window — or use **File → Open Sequence**.
-2. Press **Space** to play. Use **J / K / L** for shuttle control.
-3. Press **Ctrl+Tab** to collapse the sidebar for a clean full-canvas view.
+1.  Drop an EXR frame, image file, or video onto the window — or use **File →
+    Open Sequence**.
+2.  Press **Space** to play. Use **J / K / L** for shuttle control.
+3.  Press **Tab** to collapse the sidebar for a clean full-canvas view.
 
----
-
-## EDL / Multi-Clip Timeline *(Studio Pro)*
+- - -
+## EDL / Multi-Clip Timeline (Studio Pro)
 
 Assemble shots into a single reviewable cut:
 
-1. **EDL → New EDL**, or build one from the Playlist with **Playlist → Send Playlist to Timeline (EDL)…**
-2. **EDL → EDL Editor…** opens a non-modal editor — drag clips to reorder, drag a clip edge to trim, watch the cyan playhead track playback live.
-3. **EDL → Activate EDL Playback** to run the clips back-to-back; **Loop EDL Playback** to loop.
-4. **EDL → Export CMX3600 .edl…** to round-trip with an NLE, or render headlessly:
+1.  **EDL → New EDL**, or build one from the Playlist with **Playlist → Send
+    Playlist to Timeline (EDL)…**
+2.  **EDL → EDL Editor…** opens a non-modal editor — drag clips to reorder, drag
+    a clip edge to trim, watch the cyan playhead track playback live.
+3.  **EDL → Activate EDL Playback** to run the clips back-to-back; **Loop EDL
+    Playback** to loop.
+4.  **EDL → Export CMX3600 .edl…** to round-trip with an NLE, or render
+    headlessly:
 
 ```bash
 mh_player --convert cut.mhedl review.mp4
 mh_player --convert cut.mhedl review.mov --display aces --burnin --codec prores
 ```
-
----
-
-## Synced Remote Review *(Studio Pro)*
+- - -
+## Synced Remote Review (Studio Pro)
 
 Keep several machines on the same frame, in sync, at full quality:
 
-1. On the host, start a Sync session. Followers on the same LAN see it appear automatically and join with one click (or enter the host address).
-2. The host drives transport; playback stays frame-accurate across all participants, with automatic reconnect if a connection drops.
+1.  On the host, start a Sync session. Followers on the same LAN see it appear
+    automatically and join with one click (or enter the host address).
+2.  The host drives transport; playback stays frame-accurate across all
+    participants, with automatic reconnect if a connection drops.
 
-> For lightweight viewing on a tablet or phone, the free **browser Remote Review** (below) is still available and needs no second mh_PLAYer.
+> For lightweight viewing on a tablet or phone, the free **browser Remote Review**
+> (below) is still available and needs no second mh_PLAYer.
 
----
+- - -
+## Remote Review (browser streaming) (free)
 
-## Remote Review (browser streaming) *(free)*
-
-Start the server via **Help → Remote Review** or the antenna icon in the toolbar. A dialog shows the URL — open it on any device on the same network:
+Start the server via **Help → Remote Review** or the antenna icon in the toolbar.
+A dialog shows the URL — open it on any device on the same network:
 
 ```
 http://192.168.x.x:8765
 ```
+The browser page updates automatically during playback at ~15–20 fps on a wired
+LAN. No software installation required on the remote device. Works on iPad,
+phone, laptop, or a second PC with any modern browser.
 
-The browser page updates automatically during playback at ~15–20 fps on a wired LAN. No software installation required on the remote device. Works on iPad, phone, laptop, or a second PC with any modern browser.
+- - -
+## Plugins (Studio Pro)
 
----
+Six plugins ship inside the `plugins/` folder next to the exe — **Studio Watermark**
+, **Field Recorder**, **Contact Sheet**, **Colour Palette**, **Colour Theme**,
+and **Test Patterns** — and appear in the Plugins menu with nothing to install.
 
-## Plugins *(Studio Pro)*
-
-Six plugins ship in the `plugins/` folder — **Studio Watermark**, **Field Recorder**, **Contact Sheet**, **Colour Palette**, **Colour Theme** and **Test Patterns** — and appear in the Plugins menu. They require a Studio Pro license to run.
-
-The folder is user-writable, so you can drop in your own Python file, or replace a bundled plugin with a newer copy from <https://anti-matter-3d.com/mhplayer/>, without touching the signed executable. Plugins load on startup and can add menu commands and react to events:
+Drop your own Python file in the same folder. Plugins load on startup and can
+add menu commands and react to events:
 
 ```python
 import mh_player_api as mh
@@ -205,20 +264,23 @@ def _note():
 mh.register_menu_item("Log Review Note", _note)
 mh.on_export_complete(lambda out: mh.log(f"export done: {out}"))
 ```
+See the bundled `example_plugin.py` and Appendix B of the user manual for the
+full API.
 
-See the bundled `example_plugin.py` and Appendix B of the user manual for the full API.
-
----
-
-## Stereo / Anaglyph *(free)*
+- - -
+## Stereo / Anaglyph (free)
 
 **Two-sequence workflow:**
-1. Open the left eye sequence via File → Open Sequence.
-2. In the sidebar STEREO / ANAGLYPH section, click **Load R Eye…** to load the right eye.
-3. Check **Enable Anaglyph**.
+
+1.  Open the left eye sequence via File → Open Sequence.
+2.  In the sidebar STEREO / ANAGLYPH section, click **Load R Eye…** to load the
+    right eye.
+3.  Check **Enable Anaglyph**.
 
 **Single stereo EXR workflow:**
-1. Click **Load Stereo EXR…** — mh_PLAYer auto-detects the layer pairs and enables anaglyph immediately.
+
+1.  Click **Load Stereo EXR…** — mh_PLAYer auto-detects the layer pairs and
+    enables anaglyph immediately.
 
 **CLI headless anaglyph convert:**
 
@@ -233,9 +295,7 @@ mh_player --convert --anaglyph --stereo-exr camera_stereo.####.exr anaglyph.mp4
 mh_player --convert --anaglyph --display aces --anaglyph-gamma \
     left.####.exr --right-eye right.####.exr review.mp4
 ```
-
----
-
+- - -
 ## Pipeline CLI
 
 ```bash
@@ -255,127 +315,139 @@ mh_player --convert cut.mhedl review.mp4          # render an EDL/timeline
 mh_player --check beauty.####.exr
 mh_player --help
 ```
-
----
-
+- - -
 ## Nuke Flipbook Integration
 
 ```python
 # %USERPROFILE%\.nuke\menu.py
 import mh_player_nuke
 mh_player_nuke.register()
+set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_3.exe
 ```
-```batch
-set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_2.exe
-```
+See `Nuke_Integration/mh_player_nuke_Quickstart.pdf` for full setup including
+OCIO passthrough and exe discovery.
 
-See `Nuke_Integration/mh_player_nuke_Quickstart.pdf` for full setup including OCIO passthrough and exe discovery.
-
----
-
+- - -
 ## Verifying Your Download
 
 Every release ships with verification artefacts.
 
-| File | Purpose |
-|---|---|
-| `SHA256SUMS.txt` | Plain-text SHA-256 hashes for all release files |
-| `SHA256SUMS.yaml` | Machine-readable hashes for pipeline scripts |
-| `release_manifest.cat` | Signed Windows catalogue — cryptographic proof of file integrity |
-| `manifest.yaml` | Full release manifest (version, date, file list) |
+
+|File                |Purpose                                                         |
+|--------------------|----------------------------------------------------------------|
+|`SHA256SUMS.txt`    |Plain-text SHA-256 hashes for all release files                 |
+|`SHA256SUMS.yaml`   |Machine-readable hashes for pipeline scripts                    |
+|`release_manifest.cat`|Signed Windows catalogue — cryptographic proof of file integrity|
+|`manifest.yaml`     |Full release manifest (version, date, file list)                |
 
 **PowerShell:**
+
 ```powershell
-Get-FileHash mh_PLAYer_Win_x64_v2_12_2.exe -Algorithm SHA256
+Get-FileHash mh_PLAYer_Win_x64_v2_12_3.exe -Algorithm SHA256
 ```
-
 **Command Prompt:**
+
 ```cmd
-certutil -hashfile mh_PLAYer_Win_x64_v2_12_2.exe SHA256
+certutil -hashfile mh_PLAYer_Win_x64_v2_12_3.exe SHA256
 ```
+Compare the output against `SHA256SUMS.txt`. The exe is digitally signed and
+submitted to Microsoft WDSI and VirusTotal before every public release.
 
-Compare the output against `SHA256SUMS.txt`. The exe is digitally signed and submitted to Microsoft WDSI and VirusTotal before every public release.
-
----
-
+- - -
 ## System Requirements
 
-| | |
-|---|---|
-| OS | Windows 10 / 11 (64-bit) |
-| RAM | 16 GB min; 32 GB+ recommended for large EXR sequences |
-| Storage | SSD recommended for L3 disk cache |
-| Display | 1920×1080 min; 4K supported |
 
-**Image formats:** EXR, PNG, TIFF, JPEG, DPX, HDR  
-**Video formats:** MP4, MOV, MKV, AVI, WebM, WMV  
+|       |                                                     |
+|-------|-----------------------------------------------------|
+|OS     |Windows 10 / 11 (64-bit)                             |
+|RAM    |16 GB min; 32 GB+ recommended for large EXR sequences|
+|Storage|SSD recommended for L3 disk cache                    |
+|Display|1920×1080 min; 4K supported                          |
+
+**Image formats:** EXR, PNG, TIFF, JPEG, DPX, HDR
+
+**Video formats:** MP4, MOV, MKV, AVI, WebM, WMV
+
 **Audio formats:** WAV, MP3, FLAC, AIFF
 
----
-
+- - -
 ## Licensing
 
-mh_PLAYer is **free to download and use**. The core viewer, all display and colour management tools, stereo anaglyph compositing, aspect ratio correction, browser remote review, the QC toolkit, and the pipeline CLI work without a license — with no time limit and no reduced quality.
+mh_PLAYer is **free to download and use**. The core viewer, all display and
+colour management tools, stereo anaglyph compositing, aspect ratio correction,
+browser remote review, the QC toolkit, and the pipeline CLI work without a
+license — with no time limit and no reduced quality.
 
-Paid licenses add the production workflow features. **Individual** and **Studio** licenses unlock the same feature set and differ only in machine binding (single machine vs organisation-wide); **Studio Pro** adds the advanced collaboration and automation features on top.
+Paid licenses add the production workflow features. **Individual** and **Studio**
+licenses unlock the same feature set and differ only in machine binding (single
+machine vs organisation-wide); **Studio Pro** adds the advanced collaboration and
+automation features on top.
 
-| Capability | Free | Individual | Studio | Studio Pro |
-|---|:--:|:--:|:--:|:--:|
-| Core viewer · colour management · aspect ratio · stereo anaglyph | ✓ | ✓ | ✓ | ✓ |
-| Browser remote review · QC toolkit (scopes, inspector, histogram) · CLI | ✓ | ✓ | ✓ | ✓ |
-| Multi-View Compare (side-by-side stills) | ✓ | ✓ | ✓ | ✓ |
-| Annotations · A/B Compare · Playlist · Audio · Export · Slate & Burn-in | — | ✓ | ✓ | ✓ |
-| EDL / Multi-Clip Timeline · Synced Remote Review · Plugin Scripting | — | — | — | ✓ |
-| Licensed use across machines | — | Single (MAC-bound) | Organisation-wide | Organisation-wide |
 
-All paid licenses are **perpetual** — no subscription, no renewal fees. A **Trial** unlocks every feature, including Studio Pro, for 10 days on any machine.
+|Capability                                                             |Free|Individual        |Studio           |Studio Pro       |
+|-----------------------------------------------------------------------|----|------------------|-----------------|-----------------|
+|Core viewer · colour management · aspect ratio · stereo anaglyph       |✓   |✓                 |✓                |✓                |
+|Browser remote review · QC toolkit (scopes, inspector, histogram) · CLI|✓   |✓                 |✓                |✓                |
+|Annotations · A/B Compare · Playlist · Audio · Export · Slate & Burn-in|—   |✓                 |✓                |✓                |
+|EDL / Multi-Clip Timeline · Synced Remote Review · Plugin Scripting    |—   |—                 |—                |✓                |
+|Licensed use across machines                                           |—   |Single (MAC-bound)|Organisation-wide|Organisation-wide|
 
-| License | Use across machines | Feature set | Expiry |
-|---|---|---|---|
-| Free (unlicensed) | Any machine | Core viewer, colour, AR, stereo, browser remote review, QC, CLI | None |
-| Individual | Single machine (MAC-bound) | Free + production features | None — perpetual |
-| Studio | Organisation-wide (floating) | Free + production features | None — perpetual |
-| Studio Pro | Organisation-wide (floating) | Studio + EDL / Timeline, Synced Remote Review, Plugins | None — perpetual |
-| Trial | Any machine | All features (including Studio Pro) | 10 days |
+All paid licenses are **perpetual** — no subscription, no renewal fees. A **Trial**
+unlocks every feature, including Studio Pro, for 10 days on any machine.
 
-> Video file audio plays without a license — only imported audio for image sequences requires one.
+
+|License          |Use across machines         |Feature set                                                    |Expiry          |
+|-----------------|----------------------------|---------------------------------------------------------------|----------------|
+|Free (unlicensed)|Any machine                 |Core viewer, colour, AR, stereo, browser remote review, QC, CLI|None            |
+|Individual       |Single machine (MAC-bound)  |Free + production features                                     |None — perpetual|
+|Studio           |Organisation-wide (floating)|Free + production features                                     |None — perpetual|
+|Studio Pro       |Organisation-wide (floating)|Studio + EDL / Timeline, Synced Remote Review, Plugins         |None — perpetual|
+|Trial            |Any machine                 |All features (including Studio Pro)                            |10 days         |
+
+> Video file audio plays without a license — only imported audio for image
+> sequences requires one.
 
 **10-day full-feature trial available on request — no payment required.**
 
-After purchase you receive a signed `license.dat`. Install it from **Help → Install License…** — browse to the file and mh_PLAYer validates and installs it, then prompts you to relaunch.
+Purchase and trial requests: 
+[anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)
 
-Purchase and trial requests: [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)  
+Or contact me at: 
+[anti-matter-3d.com/contact](https://anti-matter-3d.com/contact)
 
-> This software is proprietary. Use is governed by the End User License Agreement included in the distribution (`License_Agreement.pdf`). By downloading or using mh_PLAYer you agree to its terms.
+> This software is proprietary. Use is governed by the End User License
+> Agreement included in the distribution (`License_Agreement.pdf`). By downloading
+> or using mh_PLAYer you agree to its terms.
 
----
-
+- - -
 ## Keyboard Shortcuts
 
-| Key | Action |
-|---|---|
-| Space | Play / Pause |
-| J / K / L | Shuttle reverse / stop / forward |
-| ← / → | Step one frame |
-| Home / End | First / Last frame |
-| R / G / B / A | Channel isolation |
-| C | Full colour (RGB) |
-| V | Invert display |
-| P | Cycle proxy (Full → ½ → ¼) |
-| F / 1 | Fit to window / 1:1 pixel |
-| Ctrl+Tab | Toggle sidebar |
-| N | Annotation mode *(license)* |
-| [ | A/B compare *(license)* |
-| Ctrl+G | Go to frame |
-| Ctrl+S | Save workspace |
-| Ctrl+E | Export frames *(license)* |
-| Ctrl+Shift+E | Export video *(license)* |
-| Ctrl+F | Fullscreen |
-| Shift+R | Reset EV and gamma |
 
----
+|Key          |Action                          |
+|-------------|--------------------------------|
+|Space        |Play / Pause                    |
+|J / K / L    |Shuttle reverse / stop / forward|
+|← / →        |Step one frame                  |
+|Home / End   |First / Last frame              |
+|R / G / B / A|Channel isolation               |
+|C            |Full colour (RGB)               |
+|V            |Invert display                  |
+|P            |Cycle proxy (Full → ½ → ¼)      |
+|F / 1        |Fit to window / 1:1 pixel       |
+|Tab          |Toggle sidebar                  |
+|N            |Annotation mode *(license)*     |
+|[            |A/B compare *(license)*         |
+|Ctrl+G       |Go to frame                     |
+|Ctrl+S       |Save workspace                  |
+|Ctrl+E       |Export frames *(license)*       |
+|Ctrl+Shift+E |Export video *(license)*        |
+|Ctrl+F       |Fullscreen                      |
+|Shift+R      |Reset EV and gamma              |
 
-Digitally signed · Signed release catalogue (`.cat`) + signed SFX · WDSI + VirusTotal submitted before every release  
+- - -
+Digitally signed · Signed release catalogue (`.cat`) + signed SFX · WDSI +
+VirusTotal submitted before every release
+
 [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer)
 
 *Copyright © 2026 Martin P. Heigan. All Rights Reserved.*
