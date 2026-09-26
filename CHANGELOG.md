@@ -3,6 +3,562 @@
 
 ---
 
+## v2.12.4 — 2026
+**Stencil overlay  ·  Find Feature  ·  Display grade in exports  ·  Fullscreen A/B  ·  File associations  ·  Drag-and-drop A/B  ·  Command line  ·  Remote review & control  ·  Fixed  —  DPX / Cineon · timecode at fractional rates · Quick Save · B source grading ·  Multi-View zoom/pan persistence · video in stack cells and buffers · fullscreen video · video read-ahead · clean shutdown**
+
+*Batches 1–13 of the v2.12.4 cycle.*
+
+- `VERSION` → `2.12.4`.
+
+### New — stencil overlay
+- **An image with transparency laid over playback** — a station ident, a
+  scoreboard or a stats banner — so the action can be kept clear of it while
+  animating or reviewing. Drawn A over B by the image's own alpha, over both
+  sides of an A/B wipe, under the guides, annotations and HUD, and in
+  fullscreen. The frames themselves are not changed.
+- **A new icon in the icon toolbar** (a frame with a banner and a corner ident,
+  next to the HUD and Guides icons): Show Stencil, Load Stencil…, Clear
+  Stencil; lit while a stencil is showing; opens the new **STENCIL OVERLAY**
+  sidebar section. The same three are in **View → Stencil Overlay**. **S**
+  shows and hides it (with none loaded, S asks for one). The sidebar section
+  takes a dropped PNG.
+- **Placement:** Fit to frame (default — scaled to fit, aspect kept, so a PNG
+  made at the delivery size lands pixel for pixel) or Original size (one
+  stencil pixel per source pixel, so at half or quarter proxy it still covers
+  the same part of the picture); nine positions; margin in source pixels;
+  opacity. Remembered between sessions and saved with workspaces.
+- **Baked in on request:** Export Video and Export Frames have an "Include
+  stencil overlay" option, ticked while the stencil is showing; Quick Save
+  includes it whenever it is showing. OpenEXR output with linear data gets it
+  in linear light, so it reads correctly through an sRGB view. Showing it is
+  free; baking it in follows the Export Frames / Export Video licence.
+- **Command line:** `--stencil FILE` with `--stencil-size fit|original`,
+  `--stencil-pos tl|t|tr|l|c|r|bl|b|br`, `--stencil-margin PX` and
+  `--stencil-opacity PCT`. In the viewer it shows the stencil (free); in
+  `--convert` it is baked into every frame, after the aspect ratio and under
+  the burn-in (licence).
+- Remote Review streams the clean picture, without the stencil (like the HUD
+  and annotations).
+
+### New — Find Feature (Help → Find Feature…, F1)
+- **"Where is it?" for the whole program.** Type a word and the list shows
+  every place that feature lives — the menu path, the toolbar icon, the
+  sidebar section and the key — e.g. *diff* → View → Compare → Diff Mode.
+  Everyday words work too: *wipe* finds A/B compare, *scoreboard* the stencil
+  overlay, *mirror* the flips, *stream* Remote Review.
+- **Enter or a double-click opens it** — runs the menu command, clicks the
+  icon or opens the sidebar section — and the status bar shows where it
+  lives. Commands that quit, close or clear something are listed but not run
+  from there; greyed-out items say what they need first.
+- **Built from the live menus, icons and sidebar** each time it opens, so it
+  always matches the program. Help → Keyboard Shortcuts and Find Feature now
+  read one shortcut table, so the two cannot disagree.
+
+### New — the display grade in exports
+- **Export Frames and Export Video have "Apply the display grade"**: the
+  CDL grade, invert (V) and flip (H / Shift+H) baked in exactly as the viewer
+  shows them. The label names what is active; it is ticked when any of them
+  is active and greyed when none is — untick it to export the frames as
+  stored. OpenEXR with linear data gets the CDL and the flip (invert is a
+  display check and is not applied to linear data).
+
+### Changed — Export Frames
+- **The AUDIO section is gone.** It did nothing: image sequences carry no
+  sound.
+
+### Fixed — Nuke integration (`mh_player_nuke.py`)
+- **mh_PLAYer in Nuke's Flipbook dialog.** The script replaced one of
+  Nuke's own functions instead of registering through Nuke's flipbook API;
+  it now registers mh_PLAYer as a flipbook application, listed in the
+  Flipbook dialog's Flipbook menu, and no Nuke function is replaced.
+- **Render → Open in mh_PLAYer on a Read opened the script's frame range**
+  (a Read of 1001–1010 in a script set to 1003–1100 opened 8 frames). A Read
+  now opens with its own range, a Write with its "limit to range" frames,
+  otherwise the script range. With nothing selected it says so.
+- **Finding the program:** versions are compared by number (v2.9 was picked
+  over v2.12); the script now finds mh_PLAYer when it is still in the
+  Nuke_Integration folder beside it, and wherever the Setup installed it.
+- Nuke's Python and Qt settings are no longer passed on to mh_PLAYer;
+  calling register() twice adds one menu item, not two.
+- The Nuke Quick Start is rewritten to match; the manual's A.8 said to add
+  only `import mh_player_nuke` to init.py — it is two lines in menu.py.
+
+### Fixed — Export Frames wrote nothing
+- **Every Export click raised an internal error.** The dialog passed two
+  settings (commit display transforms, export channel) that the export worker
+  did not accept, so nothing was written and the progress window stayed up.
+- **OpenEXR from a PNG, TIFF or DPX source wrote nothing** and reported
+  nothing — only EXR sources were handled. It now writes linear data (the
+  image decoded from sRGB), as the command line does.
+- **The format labels said "EV + gamma applied"**, but EV, gamma and the
+  display mode are applied only with "Commit display transforms" ticked (off
+  by default: the image as stored). The labels and the tooltip now say so, and
+  a video source follows the same setting (it always applied them).
+
+### Fixed — the EDL licence check refused Studio Pro
+- **Rendering a `.mhedl` on the command line, opening one from the command
+  line, and Send Playlist to Timeline were refused even with a Studio Pro
+  licence.** The check asked for a licence feature called "edl"; the feature is
+  "edl_timeline". (The timeline editor itself used the right name.)
+
+### New — plugins can draw text (plugin API 1.2)
+- **Three new plugin functions**, for plugin authors:
+  `render_text(...)` returns the text as a transparent image (font, size,
+  colour, optional outline, several lines, alignment) — the same kind of
+  image a plugin gets from loading a PNG, so it can be used anywhere a logo
+  is used; `find_font(name)` finds a font by name ("Arial", "Segoe UI") or
+  returns the player's own default; `list_fonts()` lists the fonts available,
+  for a font picker. Until now a plugin that wanted text had to find font
+  files itself, and Studio Watermark could only stamp a PNG.
+- The API version is now **1.2**. Existing plugins are unaffected — all
+  seven bundled plugins load and work unchanged.
+- **Fonts are found wherever Windows keeps them** — including a Windows
+  installed on a drive other than C: and fonts installed for one user only.
+  This also applies to the burn-in font.
+
+### New — Studio Watermark: image, text, or both
+- **The Studio Watermark plugin can stamp text as well as a logo** — or both
+  together. Choose the Source in the dialog: **Image** (your logo, as
+  before), **Text** (type it, choose the font, bold, fill and outline colours
+  and outline width), or **Image + Text** (the logo with the text below,
+  above, right or left of it, at a size you set relative to the logo). Handy
+  for a studio logo with the shot name or version under it — change the text
+  per delivery and keep the logo.
+- Out of the box it now stamps "WORK IN PROGRESS" in white with a dark
+  outline — the same look as the two sample logos — so there is nothing to
+  supply before the first run.
+- If you had already chosen a logo in an earlier version, it keeps using it.
+- The preview no longer comes up cropped the first time the dialog opens.
+
+### New — the sidebar follows what you are doing
+- **Using a feature now opens the sidebar at its section.** Pressing R / G / B
+  / A / C opens Channel View; P or View → Half / Quarter opens Proxy
+  Resolution; Shift+R, or the gamma control in the transport, opens Exposure /
+  Gamma; the colour-mode icon, the display-mode control and False Colour open
+  Display Transform; the aspect-ratio control opens Aspect Ratio; `[`, anything
+  under View → Compare, the B offset keys and loading a B source open Compare;
+  N (turning annotation on) and loading annotations open Annotation; loading an
+  audio file opens Audio; stepping through EXR layers opens Render Layers. If
+  the sidebar is collapsed it opens; the section expands and comes to the top.
+  It can be switched off in **Preferences → Display** ("Open the sidebar at a
+  feature's section when you use it"). The toolbar icons that name a section
+  always do it.
+- **View → Stereo / Anaglyph** — a new menu (Enable Anaglyph, Load Right Eye…,
+  Load Stereo EXR…) that also opens the Stereo / Anaglyph section.
+- **The Compare section can load and clear B itself** — a field you can drop
+  an image-sequence frame or a video on (like the LUT fields), which also shows
+  the name of the loaded B source, plus **Load B…** and **Clear B** buttons.
+
+### Fixed — found by the pre-release audit
+- **View → Guides presets did nothing.** Choosing Title Safe, Rule of Thirds
+  or Golden + Thirds — or any guide preset you had saved yourself — raised an
+  internal error and left the guides unchanged. All presets work again.
+- **The sidebar icons now bring their section to the top.** Clicking Display,
+  Compare, Scopes or Pixel Inspector in the second toolbar row opened the right
+  section, but when the sidebar was scrolled above it the section stopped near
+  the bottom edge, with its controls out of view. It now lands at the top of
+  the sidebar from either direction (HUD and Annotation, at the end of the
+  sidebar, come fully into view).
+- **Help → Keyboard Shortcuts is complete again.** Added the shortcuts it was
+  missing — Ctrl+Shift+I (load still images), Ctrl+Alt+C (copy frame image),
+  H / Shift+H (flip), Esc (clear region of interest), Shift+O (onion skin) —
+  removed a duplicate entry, corrected the Load B Source menu path, and added
+  dropping a file on the right half of the viewer and leaving fullscreen.
+- Closing the program within a few seconds of Help → Check for Latest Version
+  no longer leaves an error behind.
+
+### Fixed — Quick Save Frame now saves what you see
+- **Quick Save Frame (Ctrl+Shift+C) saves the frame exactly as displayed** —
+  exposure, display mode and the display grade (CDL, invert, flip) included,
+  for every kind of source. Image sequences used to be saved without the CDL,
+  invert and flip, while video already included them.
+
+### Fixed — the B source now follows exposure, gamma and display mode
+- **Changing exposure, gamma, the display mode or the channel view (R / G /
+  B / A) now changes A and B together.** B used to keep the settings that were in effect when it was
+  loaded, and a PNG / TIFF / JPEG or video B source ignored them altogether —
+  so a wipe could compare a brightened A with an unchanged B.
+
+### Fixed — timecode at 29.97, 59.94 and 23.976 fps
+- **The timecode on screen, in the HUD, in GUI video-export burn-ins and in
+  command-line burn-ins now always agree.** At 29.97 and 59.94 fps the player
+  now shows true drop-frame timecode (with the `;` separator, e.g.
+  00:01:00;02 one minute in), exactly as the command line already did; at
+  23.976 fps the frame labels no longer drift. Other frame rates were already
+  correct and are unchanged.
+
+### Fixed — fullscreen in A/B compare showed only one source
+- **Ctrl+F while comparing A and B now keeps the comparison.** It used to open
+  the single-source fullscreen view, so only A showed and the divider was
+  gone. In A/B wipe, difference or stack compare, Ctrl+F now makes the main
+  window fullscreen with just the viewer: both sources, the draggable divider
+  and every compare key work exactly as in the window. Ctrl+F or Esc returns
+  to the normal window with its panels as they were (F11 also works). With a
+  single source, Ctrl+F opens the usual fullscreen player.
+- **Fixed before release: Esc and Ctrl+F could not leave that fullscreen
+  view.** Hiding the menu bar had also switched off its keyboard shortcuts,
+  so the only way out was to close the program. The shortcuts now stay
+  active while fullscreen, and Esc, Ctrl+F and F11 are guaranteed to leave it
+  even independently of them.
+- **Multi-View Compare has its own fullscreen:** Ctrl+F or F11 in that window.
+  Esc first leaves fullscreen, and closes the window only when pressed again.
+
+### New — mh_PLAYer in Windows' "Open with" and Default apps
+- **Windows now offers mh_PLAYer for its file types.** Right-click a video or
+  image, choose **Open with**, and mh_PLAYer is in the list; it also appears in
+  **Settings → Apps → Default apps** with the types it opens. Nothing is taken
+  over: your existing defaults stay as they are, and you choose mh_PLAYer where
+  you want it (Open with → Always, or Default apps).
+- **Chosen in the installer, changeable any time.** Setup asks which groups to
+  offer it for — video, VFX images (EXR, DPX, CIN, HDR) and common images
+  (PNG, JPEG, TIFF) are ticked, playlists (M3U8, M3U) are optional. Change them
+  later in **Help → File Associations…** or **Preferences → Windows
+  integration**, which also serve the portable ZIP build, and whose **Open
+  Default Apps** button goes straight to mh_PLAYer's page in Windows Settings.
+  **Remove All** withdraws everything; uninstalling does too.
+- **mh_PLAYer's own files open on a double-click** — workspaces (`.mhplay`)
+  and edit decision lists (`.mhedl`).
+- **"Open with" shows a short name** — "mh_PLAYer" instead of the full
+  program description.
+- **Help → File Associations… works in the ZIP build** as well as the
+  installed one. When it cannot work (running from source), it now says
+  exactly why instead of a general notice.
+- Current user only; no administrator rights needed.
+
+### Fixed — files opened from Explorer or dropped on the viewer
+- **Double-clicking a workspace (`.mhplay`) opened nothing**, and dropping a
+  workspace, an EDL (`.mhedl`) or a playlist (`.m3u8`) tried to open it as an
+  image. All of them now open the way their menu commands do; a dropped EDL
+  starts playing the cut.
+
+### Fixed — some video formats were only half supported
+- **MXF, MTS and M2TS played, but the Open dialog hid them**, and exporting,
+  the video export and Quick Save Frame treated them as still images. Every
+  part of the player now shares one list of formats.
+- **FLV and MPEG-TS (`.ts`) now open.** `.ts` is not offered in Open with,
+  because on developers' machines it is also a source-code file type.
+
+### Installer
+- **Offers to uninstall the previous version first.** When an earlier
+  mh_PLAYer is installed, Setup shows a page with that option ticked
+  (recommended): the old version is removed completely before the new one is
+  installed, so no files from older versions are left behind. Your settings
+  are kept. Setup waits for the old uninstaller to finish completely before
+  it continues.
+- **The picture on Setup's final page now runs the full height of the
+  window**, down past the line above the Finish button — with art cut to that
+  taller shape, so the picture is not stretched, and one version per Windows
+  display scaling (100–200%), so it stays sharp on high-DPI screens too.
+- **Setup could fail on the options page at 125% and 175% display scaling**
+  because of an over-long option label; the label is shorter now, and the
+  full list of formats is in the program's File Associations dialog.
+- **Upgrading no longer leaves the previous version's program behind** in
+  the install folder (the program file name carries the version number).
+- The installer was compiled and run with the real Inno Setup compiler
+  (6.7.3) during development: install, upgrade and uninstall were each
+  checked for what they leave in the registry and the program folder.
+
+### New — drag-and-drop A / B
+- **Drop a file on the right of the wipe divider to load it as B**; drop on
+  the left to replace A. While you drag, the half the file will fill is
+  highlighted and labelled A or B, with the divider shown, so the drop always
+  says what it will do. With nothing loaded yet, a drop anywhere opens the
+  file as A, as before.
+- **Drop two files at once to fill A and B in one go** — in name order, so
+  `shot_v001` becomes A and `shot_v002` B, whichever you grabbed first. Frames
+  multi-selected from one image sequence still load as that one sequence.
+- Audio files still load as audio wherever they land, and project and
+  playlist files are never taken as a B source. A drop outside the viewer
+  (sidebar, timeline) now handles audio properly too — it used to try to open
+  it as an image.
+- Without an A/B compare licence the split never appears, so a drop simply
+  opens the file as A — no licence prompt from a drag.
+- The one-click **Load B source** button in the second toolbar row still works
+  the same way; it and the dialog now share one loading path with the drop, and
+  its tooltip now mentions dragging a file onto the right half.
+
+### Fixed — B source loaded under a sibling's name
+- **Loading a video as B could show and pre-cache the wrong file's name.**
+  Numbered video siblings (`shot_v001.mov`, `shot_v002.mov`) were grouped as if
+  they were frames of one sequence, so loading `v002` as B labelled it `v001`
+  and pointed B's background cache at `v001`. The picture itself was always
+  correct. Videos are no longer grouped.
+
+### Fixed — Multi-View Compare kept losing the view
+- **Every filmstrip click dropped all panes back to fit.** There was never a
+  reset call: the grid destroyed and rebuilt every pane on any selection
+  change, and a new pane starts at fit, so zoom *and* pan were lost as a side
+  effect of teardown. Panes whose image stays selected are now **reused**, so
+  they keep their own view with no flicker.
+- **A newly shown pane opens at the view you last set** on any pane — zoom and
+  pan together, because inspecting one region across several images needs
+  both. Fit is still the default until you first zoom. Fit All returns to it;
+  1:1 All, wheel, drag and double-click all count as setting the view. Clear
+  starts a fresh comparison at fit. Fit All and 1:1 All remain one-shot
+  buttons, and Sync Zoom & Pan is still the only view toggle.
+- **Images of a different resolution** take the same zoom, with the pan
+  clamped to that image's valid range so it cannot land off-screen. Same
+  resolution is applied exactly, so the same region stays under inspection.
+- **Remove Selected briefly built panes for the wrong images** while the
+  filmstrip and the entry list were out of step mid-removal, each a full-size
+  image conversion. It now rebuilds once, after both agree.
+
+### Fixed — video sources in stack compare and input buffers
+- **A video in a stack cell was blank**, not merely uncached: the cell looked
+  frames up by the bare file path (one path repeated per frame) and then asked
+  the still-image loader to open the MP4. Cells now use the per-frame key the
+  rest of the player uses and decode through their own video decoder, kept open
+  while the stack is up so stepping stays fast. The last member of the v2.12.3
+  video cache-key family.
+- **Recalling a buffer across source types showed the wrong picture.** Recall
+  restored the frame list but never the video decoder: a video buffer recalled
+  over an image sequence kept showing the sequence, and a sequence buffer
+  recalled over a video kept showing video frames. Recalling a video buffer now
+  reopens the clip the normal way (decoder, audio, read-ahead, frame rate);
+  recalling a sequence over a video releases the video and its audio first.
+  Sequence-to-sequence recall is unchanged.
+
+### Fixed — fullscreen on a video was black and would not play
+- **The linear video read-ahead (new in v2.12.3) almost never started.** It
+  stood down whenever the frame it was asked for was already cached — and the
+  player always caches the frame on screen first, on open, on every step and
+  after a pause. So it only ran after a scrub landed on an uncached frame; a
+  plain open-and-play left one frame of the clip in RAM. It now treats a frame
+  as covered only when the frame after it is cached too, and it leaves a fill
+  alone when the wanted frame is just ahead of it rather than restarting the
+  decoder (each restart cost a keyframe seek).
+- **Fullscreen read only from that RAM cache**, so any frame not yet there was
+  black, and playback waited forever. It now decodes a missing frame on the
+  spot exactly as the main window does, and keeps the read-ahead running ahead
+  of it. Fullscreen playback on a video runs in real time from any frame,
+  including right after a pause or a jump, and Home / End land on an image.
+- **Fullscreen playback also keyed frames by the bare file path** — v2.12.3
+  fixed the fullscreen still frame but not the playback step.
+- **Heads-up — memory:** because the read-ahead now actually runs, opening a
+  video fills up to a quarter of the RAM cache with that clip in the
+  background (the v2.12.3 design; until now it rarely got the chance).
+  Scrubbing and replay are smooth straight after opening as a result.
+
+### Fixed — clean shutdown
+- **Possible crash on exit while video read-ahead was running.** The
+  background loaders were told to stop but never waited for, so a worker could
+  still be inside a video decode as the process shut down — an abort in 4 of 6
+  test runs. Both the video read-ahead and the image-sequence preloader now
+  wait (bounded) for their threads to finish.
+
+### Fixed — the command line
+The command line had fallen behind the player and the manual. Every documented
+option now does what it says, and each is covered by a test that runs the real
+command on real files.
+- **Viewer options were lost when the file opened.** `-m`, `-E`, `-G`, `--lut`
+  and `--ocio-config` were applied before the file was opened, and opening a
+  file resets exposure and display mode, so they had no effect. They are now
+  applied after the file (and after a workspace given with `-w`), so an option
+  on the command line always wins.
+- **Options that did nothing now work:** `-w` (workspace), `-L` / `-A` (EXR
+  layer / AOV), `-c` (channel), `-z` (zoom), `--ram` (RAM cache for this
+  session), `-P bounce`, and `-s` / `-e` on sequences numbered from 1001 (the
+  range was ignored). `-B FILE` loads that file as the B source instead of
+  opening a file picker. `-a FILE` and every other way of loading audio now go
+  through the audio licence check, as Browse always did.
+- **`--convert` is one pipeline for every input.** Image sequences, video and
+  `.mhedl` timelines get the same frame range, stride, display transform,
+  exposure, LUT, grade, burn-in, aspect ratio and codec options; before, each
+  input type supported a different subset. A video source keeps its sound in
+  a movie output (at stride 1).
+- **Colour of 8-bit sources.** PNG, JPEG and video frames were gamma-encoded a
+  second time, so converting a PNG to a PNG brightened it. They are now
+  decoded from sRGB first (`-g auto`, the default), so exposure and display
+  transforms behave as they do on an EXR; `-g off` copies values untouched.
+- **Burn-in matches the GUI export** — the same renderer and layout (frame
+  number bottom-left, `--burnin-text` bottom-centre, timecode bottom-right),
+  with the timecode counted from the first frame written and drop-frame at
+  29.97 and 59.94.
+- **New:** `--cdl FILE` (an ASC-CDL `.cc` / `.ccc` / `.cdl`, applied after the
+  display transform, as in the viewer); `--check` on a video or on a `.mhedl`
+  timeline (every clip's media present, no gaps in the part used);
+  `--strict` also opens every frame and fails on empty, truncated or
+  unreadable files; alpha is kept for PNG, TIFF, WebP and EXR output;
+  `-f`, `--threads`, `--roi`, `-c` and `-d 16` now work in convert.
+- **Movies:** an odd width or height is padded by one pixel for H.264 and
+  H.265 (which need even sizes); NTSC rates are written exactly
+  (30000/1001), not as 29.97.
+- **The `mh_player` command works.** CLI PATH Setup put the program folder on
+  the PATH, but there was no `mh_player` to run there — only the versioned
+  exe. The build now writes `mh_player.cmd` beside the exe, so after CLI PATH
+  Setup `mh_player` works in any new terminal. CLI PATH Setup says so, and
+  warns if the launcher is missing.
+
+### Fixed — Remote Review (browser)
+- **Sent a frame only when there is a new one.** The page re-requested the
+  same frame about 200 times a second while the player was paused; it now
+  waits for the next frame (long-poll) and there is no network traffic while
+  paused. Frame-accurate: every new frame is announced once, and a slow
+  network or encoder skips frames rather than queueing them, so the page never
+  lags behind the player.
+- **The page shows the real playback rate, the timecode and the shot name**,
+  and the page finishes loading.
+- **The address shown is the LAN address** — on a studio network with no
+  internet route it used to show "localhost", which other machines cannot use.
+- **A second mh_PLAYer on the same machine reports the port as in use**
+  instead of silently sharing it (Windows allowed a double bind). Stop and
+  start again works straight away; the server no longer keeps the port.
+
+### Fixed — Synced Remote Review (Studio Pro)
+- **A station joining mid-session lands on the host's frame and play state at
+  once**, instead of staying where it was until the host next moved.
+- **When the host ends the session, the other stations stop straight away**
+  ("Host ended the session") instead of retrying for 25 seconds.
+- **A station that stops responding can no longer freeze the host.** Each
+  station now has its own send queue with a time-out; a machine that goes to
+  sleep mid-session is dropped and the others carry on. Frames are coalesced,
+  so a slow station catches up to the current frame instead of replaying a
+  backlog.
+- Disconnecting while an automatic reconnect was in flight could reconnect
+  anyway; the user's disconnect now always wins.
+
+### Fixed — Remote Control (127.0.0.1:7979)
+- **Reports the right version** in `/ping` (it reported an old one).
+- **`/open` opens what the player's Open does** — `####` and `%04d`
+  sequences, video, `.mhedl` timelines, `.mhplay` workspaces and `.m3u8`
+  playlists — and replies 404 for a path that does not exist. Every path used
+  to go to the single-file opener, so none of those opened, and a wrong path
+  still replied "queued".
+- **Keeps working when a client leaves a connection open** — one idle
+  connection used to block every later request.
+- **Refuses requests from web pages (403).** Any website open in a browser on
+  the same machine could drive the player through this port; scripts, curl
+  and Nuke are unaffected.
+
+### Fixed — formats, colour and export
+- **DPX and Cineon open again.** They were read through OpenCV, which has no
+  DPX or Cineon reader, so every frame failed. They are now decoded directly:
+  8 / 10 / 12 / 16-bit DPX in either byte order, and 10-bit Cineon, at any
+  width — DPX pads each line to 32 bits, and a 12 or 16-bit file of odd width
+  is read with that padding, exactly as FFmpeg reads it. (Packed 10 and 12-bit
+  DPX, which are rare, report a clear error.)
+- **Only a log scan gets the film-range stretch.** DPX and Cineon were shown
+  stretched from code 95 (black) to 685 (white) — right for a log film scan,
+  wrong for a linear or video DPX (anything FFmpeg writes, or a DPX rendered
+  in a video colour space), whose shadows were crushed and everything above
+  67% clipped. The stretch now
+  applies to Cineon and to DPX marked printing density or logarithmic; any
+  other DPX is shown as stored — in the viewer and on the command line
+  alike.
+- **24 and 30 fps video opens at 24 and 30.** It was read as 23.976 and 29.97,
+  so it played slightly slow and 30 fps material showed drop-frame timecode.
+- **CDL import keeps slope, offset and power.** Only saturation survived, even
+  for a `.cc` the player had exported itself. Import now also reads `.ccc` and
+  `.cdl` files as written by Resolve and Baselight (with or without the ASC
+  namespace, and single-value entries).
+- **The player starts when `$OCIO` is set.** With a valid OCIO config in
+  `$OCIO` — as in every Nuke studio, and as the Quick Start recommends — the
+  player stopped at startup (the OCIO panel filled its lists before creating
+  its buttons).
+- **Export Video** of a source with an odd width or height works with H.264
+  and H.265, and NTSC rates are written exactly.
+- **Cancelling Export Video works while the movie is being encoded.** Cancel
+  was only noticed between FFmpeg's log lines, and FFmpeg's progress lines do
+  not end a line — so once encoding had started, Cancel waited for the whole
+  movie (72 seconds in the test) and then left it on disk. It now stops
+  FFmpeg within a fraction of a second and removes the unfinished movie (an
+  earlier export of the same name that FFmpeg had not yet overwritten is
+  kept). **Closing the export window during an export now cancels it** — it
+  used to carry on invisibly in the background.
+- **After a workspace restore the transport's display dropdown showed the
+  previous mode** while the sidebar showed the restored one; both now agree.
+
+### Documentation
+- **The user manual, Quick Start guide, CLI cheat-sheet, Nuke Quick Start,
+  README, release notes, START HERE and QUICK START guides** are updated for
+  v2.12.4 — new sections on Open with, the sidebar following what you do,
+  video read-ahead, fullscreen A/B, and the plugin text functions.
+- **Corrected in the manual:** the sidebar is the left panel (not the
+  right); the Playlist icon opens the Playlist panel; the full list of
+  sidebar sections; the SSD cache never shows a frame made with old display
+  settings, so there is no need to purge it after changing them; a Windows
+  registry path was printed with a doubled backslash.
+- **Corrected in the GitHub README:** the sidebar toggles with Ctrl+Tab (not
+  Tab); an optional signed installer is available alongside the ZIP.
+- **Command line (manual Appendix A and the CLI cheat-sheet) rewritten from the
+  program's own option list.** Both documented options the program never had
+  (`--autoplay`, `--no-header`) and described others wrongly (burn-in text
+  position, exit codes, gamma handling). New manual section **19.9 Remote
+  Control**; section 19 now describes the browser server as it behaves.
+- **Corrected in the manual:** the CDL grade is applied after the display
+  transform (the manual said before), and import reads `.cc`, `.ccc` and
+  `.cdl`.
+- **New manual section 14.1 Stencil Overlay**; the stencil in the icon-toolbar
+  table, the sidebar list, "the sidebar follows what you do", fullscreen,
+  Export, Quick Save, the shortcut list and Appendix A; a stencil group in the
+  CLI cheat-sheet (still two pages); README, release notes, Quick Start, site.
+- **Corrected while there:** Export Frames has no annotation, burn-in, HUD or
+  slate options (the manual's 18.1 table, 18.3, section 14's tip, the licensing
+  table and README.txt all said it had) — those are Export Video's; the
+  row-2 export icon opens Export Video, not Export Frames; the GUI burn-in is
+  frame number / shot name / timecode left to right (18.3 had them wrong); the info-bar toggle
+  is on row 1, not row 2; the row-2 table is now in its real left-to-right
+  order. On the website, GUI exports do not bake the aspect ratio — only the
+  command line's `--ar` does.
+
+### Build / verification
+- `mh_PLAYer_v2_12_4_tests.py` — behavioural harness, each fix
+  with a control; every new test fails against the v2.12.3 source. Fullscreen
+  is now tested through the real Ctrl+F path, not a hand-built dialog, and
+  drag-and-drop with real drag / drop events.
+- `predelivery_check.py` — the cache-key check now follows a key passed through
+  a local variable, which is how the fullscreen bug slipped past it; its
+  self-test carries a case for that form.
+- `predelivery_check.py` — new **LAMBDACAP** source check: a `lambda x=value:`
+  connected to a signal that passes an argument, which silently overwrites the
+  captured value (the View → Guides bug). It discovers the app's own
+  action-making helpers, so helpers added later are covered too.
+- `predelivery_check.py` — new **BATPAREN** check: a bracket in `echo` or
+  `REM` text inside a `( … )` block, which silently cuts the block short.
+- `predelivery_check.py` — **release half added**, so the documented
+  pre-delivery gate now exists as documented: point it at the deliverables with
+  `--version` and `--claims` and it checks batch files and version files for
+  plain-ASCII / Windows line endings, every script for syntax, the email and
+  private-folder rules across documents, SitePad block constraints, README
+  width, stale version numbers in build files and file names, that each build
+  script agrees with its version file, and the per-release claims. Its
+  self-test proves every check can fire **and** that none fires on a clean set
+  of real edge cases (minimum-version notes, the installer's own folder
+  constant). Reviewed exceptions are marked on the line with a reason.
+- Build bat: stale "example plugin" wording now describes the bundled plugins.
+- Build bat: new step writes the `mh_player.cmd` launcher into the
+  distribution folder. The installer now installs it too (it was missing from
+  `build_installer.iss`, so the payload check stopped the installer build);
+  the stale `jaraco` lines are gone from the installer script.
+- `predelivery_check.py` — new **ISSFILES** release check: every file a build
+  script puts into the distribution folder must be installed by the installer
+  script. The harness's installer section runs the same check.
+- Three new test suites, each run in its own process by the harness and each
+  with the v2.12.4 pre-fix source as control: `…_tests_cli.py` (43 checks —
+  the real command on real files, including DPX, HDR, 16-bit TIFF, stereo
+  EXR, truncated frames and timelines), `…_tests_viewer.py` (21 checks — every
+  viewer option through the real start-up path, and start-up with `$OCIO`
+  set), `…_tests_servers.py` (the three servers over real sockets, and the
+  browser page in headless Chromium when available). The pre-fix source fails
+  34 of the 43 command-line checks.
+- `predelivery_check.py` — new **CLIFLAGS** release check: every option named
+  in a document must exist in the program's own option list (it catches
+  `--autoplay`-style drift).
+- `predelivery_check.py` — new source checks **KWARGS** (a call to one of the
+  file's own classes or functions with a keyword its definition does not
+  accept — the Export Frames bug) and **LICKEY** (a licence gate naming a
+  feature that does not exist — the EDL bug). Both fire on the code before
+  this batch; the harness's static section runs the same two checks.
+- Harness section 28 (stencil overlay and Export Frames, in its own process):
+  placement and blending maths, the canvas, the icon and its menu, S, the
+  sidebar controls, half proxy, A/B, fullscreen, workspace and restart, Export
+  Frames (PNG, EXR from PNG and from EXR), Export Video (sequence and video
+  source), Quick Save. The command-line suite adds the stencil flags and runs
+  with **real signed Studio and Studio Pro licences** (no stub), which proves
+  the EDL licence fix end to end; the viewer suite adds `--stencil`.
+
+---
+
 ## v2.12.3 — 2026
 **Fixed  —  video scrub performance · the video cache-key family · wheel/scroll guards**
 
@@ -200,16 +756,16 @@ produced wrong pixels, which is why they survived every prior review pass.
 ## v2.12.1 — 2026
 **Feature  —  Help → Install License…  ·  optional Inno Setup installer**
 
-Adds a one-click licence install path so clients never have to open
-`%APPDATA%\mh_tools\` by hand, and introduces an optional Windows installer
+Adds a one-click licence install path so clients never have to open the
+licence folder by hand, and introduces an optional Windows installer
 alongside the existing ZIP / SFX distribution.
 
 - `VERSION` → `2.12.1`.
-- **Help → Install License…** — browse for a licence `.dat` and have it placed at `%APPDATA%\mh_tools\license.dat` automatically (the canonical name the app loads), so users never open or expose that folder, where trial / temp keys also live. New `LicenseManager.validate_file()` probes the chosen file with the loader's full checks — HMAC signature + INDIVIDUAL MAC bind + TRIAL expiry, against this machine — without disturbing the active licence; an invalid file shows the exact reason with an "install anyway?" override, and an existing key is confirmed before replacement. The file is copied byte-for-byte and stored as `license.dat`, so a CMS content timestamp is preserved: a descriptively-named generator file (`license_<domain>_<name>.dat`) can be installed directly and is renamed on copy. After a successful install the user is asked to quit and relaunch.
+- **Help → Install License…** — browse for a licence `.dat` and have it installed as `license.dat` automatically (the canonical name the app loads), so users never open or expose that folder, where trial / temp keys also live. New `LicenseManager.validate_file()` probes the chosen file with the loader's full checks — HMAC signature + INDIVIDUAL MAC bind + TRIAL expiry, against this machine — without disturbing the active licence; an invalid file shows the exact reason with an "install anyway?" override, and an existing key is confirmed before replacement. The file is copied byte-for-byte and stored as `license.dat`, so a CMS content timestamp is preserved: a descriptively-named generator file (`license_<domain>_<name>.dat`) can be installed directly and is renamed on copy. After a successful install the user is asked to quit and relaunch.
 - Build set: `mh_PLAYer_v2_12_1.py` + avloose bat + `version_mh_PLAYer_v2_12_1.txt`.
-- **Optional Inno Setup installer** (`build_installer.iss` / `build_installer.bat`) — user-level install (no admin) to `%LOCALAPPDATA%\Programs\mh_tools\mh_PLAYer`, payload flattened to mirror the ZIP, Nuitka runtime clutter hidden (hidden+system) to match the tidy ZIP view, **slate-grey dark wizard theme** (`modern dark` + `WizardBackColor=$6B5C51` = #515C6B with white text; needs Inno 6.6.0+), a Start Menu shortcut, a Desktop shortcut, and an **Add to PATH** task that mirrors Help → CLI PATH Setup… (appends the install dir to `HKCU\Environment\Path`, deduped with the in-app feature, removed on uninstall). The ZIP / SFX remain the primary distribution; the installer is an additional option for less technical users.
-- **Help menu documentation links** — **Quick Start…** and **CLI Cheat Sheet…** (open the bundled `mh_PLAYer_v2_12_Quick_Start.pdf` / `mh_PLAYer_v2_12_CLI_Cheatsheet.pdf`) added after User Manual…, and **Nuke Integration…** (opens the `Nuke_Integration` folder) after License Agreement… — so the docs and Nuke files stay reachable when the app is installed to `%LOCALAPPDATA%` rather than extracted to a visible folder.
-- **Docs** — the User Manual and Quick Start now cover both the portable ZIP and the optional installer, and all licensing instructions use **Help → Install License…**; the manual `%APPDATA%\mh_tools\` licence-placement step is gone (preferences still note that folder).
+- **Optional Inno Setup installer** (`build_installer.iss` / `build_installer.bat`) — user-level install (no admin) to the user's own Programs folder, payload flattened to mirror the ZIP, Nuitka runtime clutter hidden (hidden+system) to match the tidy ZIP view, **slate-grey dark wizard theme** (`modern dark` + `WizardBackColor=$6B5C51` = #515C6B with white text; needs Inno 6.6.0+), a Start Menu shortcut, a Desktop shortcut, and an **Add to PATH** task that mirrors Help → CLI PATH Setup… (appends the install dir to `HKCU\Environment\Path`, deduped with the in-app feature, removed on uninstall). The ZIP / SFX remain the primary distribution; the installer is an additional option for less technical users.
+- **Help menu documentation links** — **Quick Start…** and **CLI Cheat Sheet…** (open the bundled `mh_PLAYer_v2_12_Quick_Start.pdf` / `mh_PLAYer_v2_12_CLI_Cheatsheet.pdf`) added after User Manual…, and **Nuke Integration…** (opens the `Nuke_Integration` folder) after License Agreement… — so the docs and Nuke files stay reachable when the app is installed to the per-user Programs folder rather than extracted to a visible folder.
+- **Docs** — the User Manual and Quick Start now cover both the portable ZIP and the optional installer, and all licensing instructions use **Help → Install License…**; the manual's hand-placement step for the licence file is gone.
 
 ---
 
