@@ -1,4 +1,4 @@
-# mh_PLAYer v2.12.3
+# mh_PLAYer v2.12.4
 
 **High-Performance CGI/VFX Image Sequence & Video Player for Windows**
 
@@ -14,7 +14,7 @@ Martin P. Heigan · [anti-matter-3d.com](https://anti-matter-3d.com/mhplayer)
 ## Download
 
 
-[⬇ Download mh_PLAYer v2.12.3 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_3.zip)
+[⬇ Download mh_PLAYer v2.12.4 (Windows x64)](https://anti-matter-3d.com/mh_player/mh_PLAYer_v2_12_4.zip)
 
 Or visit [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) for
 release notes and licensing. GitHub mirror: 
@@ -33,11 +33,12 @@ Version 2.12 adds a complete **EDL / Multi-Clip Timeline**, frame-accurate **
 Synced Remote Review** across machines, and **Python plugin scripting** — turning
 the player into a review and conform hub for the whole team.
 
-**v2.12.3** rebuilds video caching around a linear read-ahead, making video
-scrubbing instant over the cached span instead of decode-bound. See 
-[CHANGELOG.md](CHANGELOG.md).
+**v2.12.4** puts mh_PLAYer in Windows' **Open with** menu, makes A/B compare
+drag-and-drop and fullscreen, lets the sidebar follow what you do, and gives
+plugins text rendering. See [CHANGELOG.md](CHANGELOG.md).
 
-No Python. No dependencies. No installer. Extract the ZIP and run.
+No Python. No dependencies. Extract the ZIP and run — or use the optional
+signed installer.
 
 - - -
 ## Features
@@ -46,7 +47,8 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 - **OpenEXR multi-layer** — full AOV tree, all channel depths, float16/float32
 - **HDR / Radiance RGBE** — `.hdr` support with Reinhard tone-map
-- **Video** — MP4, MOV, MKV, AVI, WebM, WMV via bundled FFmpeg
+- **Video** — MP4, MOV, MKV, MXF, AVI, WebM, WMV, MTS / M2TS, TS, FLV via bundled
+  FFmpeg
 - **Linear video read-ahead** — clips are decoded in order into RAM ahead of the
   playhead, so scrubbing over the cached span is instant and playback needs no
   further decoding; the span re-anchors wherever you scrub to
@@ -59,7 +61,8 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 - sRGB, ACES Filmic, Power Gamma, Linear display modes
 - **False Colour** — exposure heat map keyed to 18% grey (GUI and CLI)
-- **CDL grade** — slope / offset / power, applied through a fast precomputed LUT
+- **CDL grade** — slope / offset / power / saturation on the display image
+  through a fast precomputed LUT; imports ASC-CDL .cc, .ccc and .cdl
 - LUT support — `.cube` and `.3dl`
 - **OpenColorIO bundled** — no separate install; auto-loads `$OCIO`
 - Auto colour space detection from EXR header on load
@@ -80,22 +83,33 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 **Review & QC**
 
-- A/B Wipe compare — draggable divider or independent B sequence *(license)*
+- A/B Wipe compare — draggable divider or independent B sequence; **drag a file
+  onto the right half of the viewer** to load it as B; **fullscreen keeps A, B
+  and the divider**; B always shares A's exposure, gamma, display mode and
+  channel view *(license)*
 - Diff mode — `|A−B| × amplify` (1–32×) full-frame difference *(license)*
 - **Playlist** — multi-clip queue with per-clip In/Out trim, drag-reorder, and **
   M3U / M3U8 import/export**; SSD pre-caching between clips *(license)*
 - Annotation tools — pen, line, arrow, rectangle, text + voice notes *(license)*
 - HUD overlay — frame number, SMPTE TC (drop-frame-correct at 29.97/59.94),
   shot name (file / folder / custom)
+- **Stencil overlay** — lay a PNG with transparency (a station ident, a
+  scoreboard, a stats banner) over playback to keep the action clear of it; fit
+  to frame or original size, nine positions, margin, opacity; **S** shows / hides
+  it *(free — baking it into exports follows the export licence)*
 - **Remote Review (browser streaming)** — built-in HTTP server; open `
-  http://LAN-IP:8765` on any tablet, phone, or second PC; ~15–20 fps on a wired
-  LAN; no software install on the remote device *(free)*
+  http://LAN-IP:8765` on any tablet, phone, or second PC; follows playback frame
+  by frame with frame number, timecode and shot name, and sends nothing while
+  paused; no software install on the remote device *(free)*
+- **Remote Control** — `127.0.0.1:7979` scripting port for Nuke, scripts and
+  curl: open, go to frame, play, stop *(free)*
 - Waveform / Parade scope — vertical RGB stack with solo buttons
 - Pixel inspector — linear float readout, hex sRGB, clipboard copy
 - Histogram — live RGB overlay
 - **Multi-View Compare** — dailies-style grid of up to 9 stills with per-pane
-  zoom/pan and optional synced inspection; **Grab Current Frame** captures the
-  canvas exactly as displayed *(free)*
+  zoom/pan (kept as you change the selection), optional synced inspection and
+  its own fullscreen; **Grab Current Frame** captures the canvas exactly as
+  displayed *(free)*
 
 **EDL / Multi-Clip Timeline** *(Studio Pro)*
 
@@ -126,10 +140,11 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 - Load small **Python plugins** that add menu commands and react to
   playback/export events
 - Stable, versioned `mh_player_api` — state queries, playback control,
-  status/log, and event hooks
-- **Six plugins ship in the box** — Studio Watermark, Field Recorder, Contact
-  Sheet, Colour Palette, Colour Theme, and Test Patterns — in the `plugins/`
-  folder next to the exe, nothing to install
+  status/log, event hooks, and **text rendering** (API 1.2: `render_text`, `
+  find_font`, `list_fonts`)
+- **Six plugins ship in the box** — Studio Watermark (logo, text, or both), Field
+  Recorder, Contact Sheet, Colour Palette, Colour Theme, and Test Patterns — in
+  the `plugins/` folder next to the exe, nothing to install
 - Drop your own `.py` file in the same folder; the bundled `example_plugin.py`
   shows the structure
 - Full API reference in Appendix B of the user manual
@@ -137,11 +152,20 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 **Interface**
 
 - **Quick-access icon toolbar** — collapsible rows of icon buttons for display,
-  HUD, guides, A/B compare, scopes, remote review, plus a second row for
-  Playlist, EDL, Onion-skin, Export, and Sync
-- **Sidebar anchors** — toolbar icons scroll the sidebar directly to the relevant
-  section; auto-expands if collapsed
+  HUD, guides, the stencil overlay, A/B compare, scopes, remote review,
+  Playlist, EDL, Onion-skin, Multi-View, Export Video and Sync
+- **Sidebar anchors** — toolbar icons bring the relevant sidebar section to the
+  top; auto-expands if collapsed
+- **The sidebar follows what you do** — channel keys, proxy, exposure, display
+  mode, aspect ratio, compare, audio and layers open their section when used
+  (switchable in Preferences)
+- **Windows integration** — offered in **Open with** and Default apps for video
+  and images without changing your defaults (**Help → File Associations…**); `
+  .mhplay` / `.mhedl` open on a double-click
 - Collapsible sidebar — Tab or click the ‹ strip for a clean full-canvas view
+- **Find Feature** — Help → Find Feature… (**F1**): type a word (*diff*, *wipe*, *
+  scoreboard*) to see where a feature lives — menu path, toolbar icon, sidebar
+  section and key — and open it from the list
 - **Wheel-safe controls** — the mouse wheel scrolls panels and zooms the canvas;
   it never changes a combo, spin box or slider value, so scrolling a dialog
   cannot alter a setting by accident
@@ -153,7 +177,8 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
   line; render a timeline headlessly
 - **CLI PATH Setup** — Help → CLI PATH Setup… adds the app to user PATH, no admin
   rights required
-- Nuke flipbook integration — `mh_player_nuke.py` \+ `
+- Nuke flipbook integration — mh_PLAYer in Nuke's Flipbook dialog, plus **Render
+  → Open in mh_PLAYer** for Read / Write nodes; `mh_player_nuke.py` \+ `
   mh_player_nuke_Quickstart.pdf` included
 - Workspace save/load — complete session state in a `.mhplay` file
 - Sequence gap detection — warns on open with exact missing frame ranges
@@ -164,9 +189,14 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 
 **Export** *(license required)*
 
-- Frame export — PNG, TIFF, EXR; current / range / full sequence
+- Frame export — PNG, TIFF, EXR; current / range / full sequence; optionally
+  with the stencil overlay
 - Video export — H.264, H.265, ProRes via bundled FFmpeg
-- Slate & burn-in — shot, scene, take, artist, company, logo, watermark
+- Slate & burn-in (video export) — shot, scene, take, artist, company, logo,
+  watermark
+- Stencil overlay baked into video, frames and Quick Save on request
+- **Display grade in exports** — the CDL grade, invert and flip baked into video
+  and frames on request (a tick box in each export window)
 - Quick Save — current frame to PNG/TIFF/JPEG, one keystroke
 
 - - -
@@ -175,14 +205,17 @@ No Python. No dependencies. No installer. Extract the ZIP and run.
 1.  Download the ZIP from 
     [anti-matter-3d.com/mhplayer](https://anti-matter-3d.com/mhplayer) or the 
     [Releases](https://github.com/MHeigan/mh_player/releases) page.
-2.  Extract to any folder — no installer or admin rights required.
-3.  Run `mh_PLAYer_Win_x64_v2_12_3.exe`.
+2.  Extract to any folder — no installer or admin rights required. (Prefer a
+    managed install? The signed `mh_PLAYer_Win_x64_v2_12_4_Setup.exe` installs
+    per-user, with shortcuts, PATH, Open with integration, and an offer to
+    remove the previous version first.)
+3.  Run `mh_PLAYer_Win_x64_v2_12_4.exe`.
 4.  Use **Help → Manage Shortcuts…** to create Desktop and Start Menu shortcuts.
 5.  Use **Help → CLI PATH Setup…** to add mh_PLAYer to your user PATH for
     terminal access.
 
 ```
-mh_PLAYer_Win_x64_v2_12_3.exe       Main application (digitally signed)
+mh_PLAYer_Win_x64_v2_12_4.exe       Main application (digitally signed)
 ffmpeg\                              Bundled FFmpeg
 _internal\                           Application runtime files
 plugins\                             Six bundled plugins + example_plugin.py
@@ -198,7 +231,7 @@ README.txt                           Plain-text quick reference
 1.  Drop an EXR frame, image file, or video onto the window — or use **File →
     Open Sequence**.
 2.  Press **Space** to play. Use **J / K / L** for shuttle control.
-3.  Press **Tab** to collapse the sidebar for a clean full-canvas view.
+3.  Press **Ctrl+Tab** to collapse the sidebar for a clean full-canvas view.
 
 - - -
 ## EDL / Multi-Clip Timeline (Studio Pro)
@@ -240,8 +273,12 @@ A dialog shows the URL — open it on any device on the same network:
 ```
 http://192.168.x.x:8765
 ```
-The browser page updates automatically during playback at ~15–20 fps on a wired
-LAN. No software installation required on the remote device. Works on iPad,
+The page follows playback frame by frame, up to the playback rate, with the
+frame number, timecode and shot name. Each new frame is sent once; if the
+network falls behind, frames are skipped rather than queued, so the page never
+lags behind the player. Nothing is sent while paused. The stream is a JPEG
+preview (quality 75%, up to 960 px wide) — for review, not colour-critical
+checks. No software installation required on the remote device. Works on iPad,
 phone, laptop, or a second PC with any modern browser.
 
 - - -
@@ -264,6 +301,9 @@ def _note():
 mh.register_menu_item("Log Review Note", _note)
 mh.on_export_complete(lambda out: mh.log(f"export done: {out}"))
 ```
+Plugin API 1.2 adds text — `mh.render_text("WORK IN PROGRESS", size=96,
+bold=True)` returns a transparent image a plugin can stamp, scale or save.
+
 See the bundled `example_plugin.py` and Appendix B of the user manual for the
 full API.
 
@@ -322,7 +362,15 @@ mh_player --help
 # %USERPROFILE%\.nuke\menu.py
 import mh_player_nuke
 mh_player_nuke.register()
-set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_3.exe
+```
+Add the `Nuke_Integration` folder to `NUKE_PATH` (or copy the script to `.nuke`
+). Then choose **mh_PLAYer** in Nuke's Flipbook dialog, or select a Read / Write
+node and use **Render → Open in mh_PLAYer** (no render; a Read opens with its own
+frame range). A Setup install is found automatically; otherwise point the
+script at the exe:
+
+```batch
+set MH_PLAYER_PATH=C:\App\mh_PLAYer\mh_PLAYer_Win_x64_v2_12_4.exe
 ```
 See `Nuke_Integration/mh_player_nuke_Quickstart.pdf` for full setup including
 OCIO passthrough and exe discovery.
@@ -343,12 +391,12 @@ Every release ships with verification artefacts.
 **PowerShell:**
 
 ```powershell
-Get-FileHash mh_PLAYer_Win_x64_v2_12_3.exe -Algorithm SHA256
+Get-FileHash mh_PLAYer_Win_x64_v2_12_4.exe -Algorithm SHA256
 ```
 **Command Prompt:**
 
 ```cmd
-certutil -hashfile mh_PLAYer_Win_x64_v2_12_3.exe SHA256
+certutil -hashfile mh_PLAYer_Win_x64_v2_12_4.exe SHA256
 ```
 Compare the output against `SHA256SUMS.txt`. The exe is digitally signed and
 submitted to Microsoft WDSI and VirusTotal before every public release.
@@ -366,7 +414,7 @@ submitted to Microsoft WDSI and VirusTotal before every public release.
 
 **Image formats:** EXR, PNG, TIFF, JPEG, DPX, HDR
 
-**Video formats:** MP4, MOV, MKV, AVI, WebM, WMV
+**Video formats:** MP4, MOV, MKV, MXF, AVI, WebM, WMV, MTS / M2TS, TS, FLV
 
 **Audio formats:** WAV, MP3, FLAC, AIFF
 
@@ -423,26 +471,29 @@ Or contact me at:
 ## Keyboard Shortcuts
 
 
-|Key          |Action                          |
-|-------------|--------------------------------|
-|Space        |Play / Pause                    |
-|J / K / L    |Shuttle reverse / stop / forward|
-|← / →        |Step one frame                  |
-|Home / End   |First / Last frame              |
-|R / G / B / A|Channel isolation               |
-|C            |Full colour (RGB)               |
-|V            |Invert display                  |
-|P            |Cycle proxy (Full → ½ → ¼)      |
-|F / 1        |Fit to window / 1:1 pixel       |
-|Tab          |Toggle sidebar                  |
-|N            |Annotation mode *(license)*     |
-|[            |A/B compare *(license)*         |
-|Ctrl+G       |Go to frame                     |
-|Ctrl+S       |Save workspace                  |
-|Ctrl+E       |Export frames *(license)*       |
-|Ctrl+Shift+E |Export video *(license)*        |
-|Ctrl+F       |Fullscreen                      |
-|Shift+R      |Reset EV and gamma              |
+|Key          |Action                                             |
+|-------------|---------------------------------------------------|
+|Space        |Play / Pause                                       |
+|J / K / L    |Shuttle reverse / stop / forward                   |
+|← / →        |Step one frame                                     |
+|Home / End   |First / Last frame                                 |
+|R / G / B / A|Channel isolation                                  |
+|C            |Full colour (RGB)                                  |
+|V            |Invert display                                     |
+|P            |Cycle proxy (Full → ½ → ¼)                         |
+|F / 1        |Fit to window / 1:1 pixel                          |
+|Ctrl+Tab     |Toggle sidebar                                     |
+|N            |Annotation mode *(license)*                        |
+|[            |A/B compare *(license)*                            |
+|Ctrl+G       |Go to frame                                        |
+|Ctrl+S       |Save workspace                                     |
+|Ctrl+E       |Export frames *(license)*                          |
+|Ctrl+Shift+E |Export video *(license)*                           |
+|Ctrl+F       |Fullscreen (keeps A/B compare; Esc or F11 to leave)|
+|Ctrl+Shift+C |Quick save frame as displayed *(license)*          |
+|Shift+R      |Reset EV and gamma                                 |
+|S            |Stencil overlay show / hide                        |
+|F1           |Find Feature — where is it?                        |
 
 - - -
 Digitally signed · Signed release catalogue (`.cat`) + signed SFX · WDSI +
